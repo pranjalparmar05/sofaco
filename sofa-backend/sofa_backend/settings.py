@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-i1aih!6!9y8x)eubj-e@ww)age6)$pk103@c#+g%=q7w6!l3px'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -120,7 +120,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-
+import os
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
@@ -140,3 +141,5 @@ CORS_ALLOWED_ORIGINS = [
 import os
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']

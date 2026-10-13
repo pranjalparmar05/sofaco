@@ -1,0 +1,1 @@
+web: gunicorn sofa_backend.wsgi:application
