@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+/* Minimal CSS reset */
+html, body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-border;
+  background-color: #f9fafb;
+}
