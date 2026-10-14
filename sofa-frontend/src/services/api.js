@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'http://127.0.0.1:8000/api/';
+// Seedha live Render URL yahan likh dein
+const API_URL = 'https://sofaco.onrender.com/api/';
 
 export const getSofas = async () => {
     try {
