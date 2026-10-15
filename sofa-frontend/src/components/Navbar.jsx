@@ -1,9 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AuthModal from './AuthModal';
 
 export default function Navbar() {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [user, setUser] = useState(localStorage.getItem('username'));
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setUser(localStorage.getItem('username'));
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.clear();
+    setUser(null);
+    window.location.reload();
+  };
 
   return (
     <>
@@ -11,8 +25,8 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             {/* Logo */}
-            <div className="shrink-0 flex items-center">
-              <span className="text-2xl font-bold text-amber-800 tracking-wide cursor-pointer">
+            <div className="shrink-0 flex items-center cursor-pointer">
+              <span className="text-2xl font-bold text-amber-800 tracking-wide">
                 SofaCraft🛋️
               </span>
             </div>
@@ -20,12 +34,12 @@ export default function Navbar() {
             {/* Links */}
             <div className="hidden md:flex space-x-8 font-medium text-gray-700">
               <a href="#home" className="hover:text-amber-700 transition duration-200">Home</a>
-              <a href="#products" className="hover:text-amber-700 transition duration-200">Sofa Collection</a>
-              <a href="#about" className="hover:text-amber-700 transition duration-200">About Us</a>
+              <a href="#products" className="hover:text-amber-700 transition duration-200">Collection</a>
+              <a href="#about" className="hover:text-amber-700 transition duration-200">About</a>
               <a href="#contact" className="hover:text-amber-700 transition duration-200">Contact</a>
             </div>
 
-            {/* Cart & Login */}
+            {/* Cart & Auth */}
             <div className="flex items-center space-x-4">
               <button className="relative p-2 text-gray-700 hover:text-amber-700 transition duration-200">
                 🛒
@@ -35,25 +49,33 @@ export default function Navbar() {
               </button>
 
               {user ? (
-                <span className="text-amber-900 font-semibold">Hi, {user}</span>
+                <div className="flex items-center space-x-3">
+                  <span className="text-amber-900 font-semibold">Hi, {user}</span>
+                  <button 
+                    type="button"
+                    onClick={handleLogout}
+                    className="bg-red-600 text-white px-3 py-1.5 rounded-lg text-sm hover:bg-red-700 transition cursor-pointer"
+                  >
+                    Logout
+                  </button>
+                </div>
               ) : (
                 <button 
-                   type="button"  // Yeh zaroori hai taaki yeh form submit ya default link behavior na kare
-                    onClick={(e) => {
-                    e.preventDefault(); // Yeh page ko jump hone ya URL change hone se roquega
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
                     setIsAuthOpen(true);
                   }}
-                    className="bg-amber-800 text-white px-4 py-2 rounded-lg hover:bg-amber-900 transition duration-200 font-medium shadow-sm cursor-pointer"
-                  >
-                   Login
-                 </button>
+                  className="bg-amber-800 text-white px-4 py-2 rounded-lg hover:bg-amber-900 transition duration-200 font-medium shadow-sm cursor-pointer"
+                >
+                  Login
+                </button>
               )}
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Auth Modal Component */}
       <AuthModal 
         isOpen={isAuthOpen} 
         onClose={() => setIsAuthOpen(false)} 

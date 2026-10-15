@@ -3,14 +3,14 @@ import axios from 'axios';
 
 export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   const [isRegistering, setIsRegistering] = useState(false);
-  const [step, setStep] = useState(1); // Step 1: Form, Step 2: OTP Verification
+  const [step, setStep] = useState(1); 
   const [formData, setFormData] = useState({ username: '', email: '', password: '' });
   const [otp, setOtp] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Apna Render ka backend URL yahan dalein
-  const API_BASE_URL = "https://your-backend-url.onrender.com"; 
+  // Apna Render backend URL yahan dalein
+  const API_BASE_URL = "https://sofa-backend-xxxx.onrender.com"; 
 
   if (!isOpen) return null;
 
@@ -18,14 +18,14 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Register Handle
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setMessage('');
     try {
       const response = await axios.post(`${API_BASE_URL}/api/accounts/register/`, formData);
       setMessage(response.data.message);
-      setStep(2); // OTP step par move karein
+      setStep(2); 
     } catch (error) {
       setMessage(error.response?.data?.error || "Registration failed!");
     } finally {
@@ -33,17 +33,16 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
     }
   };
 
-  // OTP Verification & Auto Login Handle
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setMessage('');
     try {
       const response = await axios.post(`${API_BASE_URL}/api/accounts/verify-otp/`, {
         email: formData.email,
         otp: otp
       });
       
-      // Token save karein localStorage me (Automatic Login)
       localStorage.setItem('access_token', response.data.access);
       localStorage.setItem('refresh_token', response.data.refresh);
       localStorage.setItem('username', response.data.username);
@@ -62,8 +61,9 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 relative">
         <button 
+          type="button"
           onClick={onClose} 
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-xl"
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-xl cursor-pointer"
         >
           &times;
         </button>
@@ -132,7 +132,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
               <button 
                 type="button" 
                 onClick={() => setIsRegistering(!isRegistering)} 
-                className="text-amber-700 font-semibold hover:underline"
+                className="text-amber-700 font-semibold hover:underline cursor-pointer"
               >
                 {isRegistering ? "Login" : "Register"}
               </button>
@@ -141,7 +141,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
         ) : (
           <form onSubmit={handleVerifyOtp} className="space-y-4">
             <p className="text-sm text-gray-600 text-center">
-              We have sent a 6-digit OTP to your console/email. Please enter it below.
+              We have sent a 6-digit OTP to your backend console. Please enter it below.
             </p>
             <div>
               <label className="block text-sm font-medium text-gray-700">Enter 6-digit OTP</label>
