@@ -31,17 +31,20 @@ export default function Navbar() {
               </span>
             </div>
 
-            {/* Links */}
+            {/* Navigation Links */}
             <div className="hidden md:flex space-x-8 font-medium text-gray-700">
               <a href="#home" className="hover:text-amber-700 transition duration-200">Home</a>
               <a href="#products" className="hover:text-amber-700 transition duration-200">Collection</a>
-              <a href="#about" className="hover:text-amber-700 transition duration-200">About</a>
-              <a href="#contact" className="hover:text-amber-700 transition duration-200">Contact</a>
+              <a href="#about" className="hover:text-amber-700 transition duration-200">About Us</a>
+              <a href="#contact" className="hover:text-amber-700 transition duration-200">Contact Us</a>
             </div>
 
             {/* Cart & Auth */}
-            <div className="flex items-center space-x-4">
-              <button className="relative p-2 text-gray-700 hover:text-amber-700 transition duration-200">
+            <div className="flex items-center space-x-4 relative z-50">
+              <button 
+                type="button"
+                className="relative p-2 text-gray-700 hover:text-amber-700 transition duration-200 cursor-pointer"
+              >
                 🛒
                 <span className="absolute -top-1 -right-1 bg-amber-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
                   0
@@ -63,10 +66,10 @@ export default function Navbar() {
                 <button 
                   type="button"
                   onClick={(e) => {
-                    e.preventDefault();
+                    e.stopPropagation();
                     setIsAuthOpen(true);
                   }}
-                  className="bg-amber-800 text-white px-4 py-2 rounded-lg hover:bg-amber-900 transition duration-200 font-medium shadow-sm cursor-pointer"
+                  className="bg-amber-800 text-white px-4 py-2 rounded-lg hover:bg-amber-900 transition duration-200 font-medium shadow-md cursor-pointer"
                 >
                   Login
                 </button>
