@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import AuthModal from './AuthModal'; // Path apne hisab se check kar lein
+import AuthModal from './AuthModal';
 
 export default function Navbar() {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
@@ -38,7 +38,10 @@ export default function Navbar() {
                 <span className="text-amber-900 font-semibold">Hi, {user}</span>
               ) : (
                 <button 
-                  onClick={() => setIsAuthOpen(true)}
+                  onClick={() => {
+                    console.log("Login button clicked!"); // Console me check karne ke liye
+                    setIsAuthOpen(true);
+                  }}
                   className="bg-amber-800 text-white px-4 py-2 rounded-lg hover:bg-amber-900 transition duration-200 font-medium shadow-sm cursor-pointer"
                 >
                   Login
