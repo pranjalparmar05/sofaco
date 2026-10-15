@@ -16,7 +16,7 @@ SECRET_KEY = 'django-insecure-i1aih!6!9y8x)eubj-e@ww)age6)$pk103@c#+g%=q7w6!l3px
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["https://sofaco.vercel.app",]
 
 
 # Application definition
@@ -121,11 +121,7 @@ MAILERS = {
     },
 }
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:5174",
-]
+CORS_ALLOWED_ORIGINS = True
 
 # Media Files (Sofa Images) Configuration
 import os
