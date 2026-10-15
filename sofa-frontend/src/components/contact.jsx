@@ -1,4 +1,4 @@
-export default function Contact() {
+export default function contact() {
   return (
     <section id="contact" className="py-16 bg-white px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-12">
       <div className="max-w-2xl mx-auto text-center">
