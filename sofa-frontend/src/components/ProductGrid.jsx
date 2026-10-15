@@ -1,28 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { getSofas } from '../services/api';
+import React from 'react';
 
-export default function ProductGrid() {
-  const [sofas, setSofas] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getSofas()
-      .then(data => {
-        setSofas(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error(err);
-        setLoading(false);
-      });
-  }, []);
-
-  if (loading) {
-    return <div className="text-center py-12 text-lg font-medium text-gray-600">Loading luxurious sofas...</div>;
-  }
-
-  if (sofas.length === 0) {
-    return <div className="text-center py-12 text-gray-500">No sofas available yet. Please add some from the Django Admin panel!</div>;
+export default function ProductList({ sofas = [], onAddToCart }) {
+  // Agar sofas data abhi load ho raha hai ya khali hai
+  if (!sofas || sofas.length === 0) {
+    return (
+      <section id="products" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Exclusive Sofa Collection</h2>
+        <p className="text-gray-500">Loading amazing sofas or no products found...</p>
+      </section>
+    );
   }
 
   return (
@@ -31,7 +17,10 @@ export default function ProductGrid() {
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {sofas.map((sofa) => (
-          <div key={sofa.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition duration-300 border border-gray-100 flex flex-col justify-between">
+          <div 
+            key={sofa.id} 
+            className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition duration-300 border border-gray-100 flex flex-col justify-between"
+          >
             <div>
               {sofa.image ? (
                 <img src={sofa.image} alt={sofa.name} className="w-full h-64 object-cover" />
@@ -57,7 +46,11 @@ export default function ProductGrid() {
                   <span className="text-sm text-gray-400 line-through ml-2">₹{sofa.original_price}</span>
                 )}
               </div>
-              <button className="bg-amber-800 text-white px-4 py-2 rounded-lg hover:bg-amber-900 transition font-medium shadow-sm">
+              <button 
+                type="button"
+                onClick={() => onAddToCart ? onAddToCart(sofa) : alert(`${sofa.name} added to cart!`)}
+                className="bg-amber-800 text-white px-4 py-2 rounded-lg hover:bg-amber-900 transition font-medium shadow-sm cursor-pointer relative z-10"
+              >
                 Add to Cart
               </button>
             </div>
