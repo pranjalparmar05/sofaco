@@ -38,14 +38,15 @@ export default function Navbar() {
                 <span className="text-amber-900 font-semibold">Hi, {user}</span>
               ) : (
                 <button 
-                  onClick={() => {
-                    console.log("Login button clicked!"); // Console me check karne ke liye
+                   type="button"  // Yeh zaroori hai taaki yeh form submit ya default link behavior na kare
+                    onClick={(e) => {
+                    e.preventDefault(); // Yeh page ko jump hone ya URL change hone se roquega
                     setIsAuthOpen(true);
                   }}
-                  className="bg-amber-800 text-white px-4 py-2 rounded-lg hover:bg-amber-900 transition duration-200 font-medium shadow-sm cursor-pointer"
-                >
-                  Login
-                </button>
+                    className="bg-amber-800 text-white px-4 py-2 rounded-lg hover:bg-amber-900 transition duration-200 font-medium shadow-sm cursor-pointer"
+                  >
+                   Login
+                 </button>
               )}
             </div>
           </div>
