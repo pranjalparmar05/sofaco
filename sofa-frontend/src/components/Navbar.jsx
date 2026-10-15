@@ -1,4 +1,9 @@
 export default function Navbar() {
+  const handleLoginClick = () => {
+    alert("Login modal ya page jaldi open hoga!");
+    // Yahan aap apna login modal open karne ka state ya navigation laga sakte hain
+  };
+
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -26,7 +31,10 @@ export default function Navbar() {
                 0
               </span>
             </button>
-            <button className="bg-amber-800 text-white px-4 py-2 rounded-lg hover:bg-amber-900 transition duration-200 font-medium shadow-sm">
+            <button 
+              onClick={handleLoginClick}
+              className="bg-amber-800 text-white px-4 py-2 rounded-lg hover:bg-amber-900 transition duration-200 font-medium shadow-sm cursor-pointer"
+            >
               Login
             </button>
           </div>
