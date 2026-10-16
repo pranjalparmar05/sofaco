@@ -12,20 +12,20 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Cart, Orders & Payment State
+  // Cart & Order Drawer State
   const [cart, setCart] = useState([]);
-  const [isCartOpen, setIsCartOpen] = useState(false); // Right side Cart Drawer toggle
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [selectedSofaForPayment, setSelectedSofaForPayment] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
 
-  // Background Carousel Images
+  // Cinematic Background Carousel
   const backgroundImages = [
-    'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?q=80&w=1920&auto=format&fit=crop', 
-    'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=1920&auto=format&fit=crop', 
-    'https://images.unsplash.com/photo-1618220179428-22790b461013?q=80&w=1920&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?q=80&w=2000&auto=format&fit=crop', 
+    'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=2000&auto=format&fit=crop', 
+    'https://images.unsplash.com/photo-1618220179428-22790b461013?q=80&w=2000&auto=format&fit=crop',
   ];
 
   const [currentBgIndex, setCurrentBgIndex] = useState(0);
@@ -34,7 +34,6 @@ export default function App() {
     const bgInterval = setInterval(() => {
       setCurrentBgIndex((prevIndex) => (prevIndex + 1) % backgroundImages.length);
     }, 6000); 
-
     return () => clearInterval(bgInterval);
   }, [backgroundImages.length]);
 
@@ -51,7 +50,6 @@ export default function App() {
       ];
 
       let success = false;
-
       for (const url of endpoints) {
         try {
           const res = await fetch(url);
@@ -68,7 +66,7 @@ export default function App() {
       }
 
       if (!success) {
-        setError('Backend database se connection nahi ho paa raha hai.');
+        setError('Backend PostgreSQL database se connection establish nahi ho paya.');
         setLoading(false);
       }
     };
@@ -78,7 +76,7 @@ export default function App() {
 
   const handleAuthSubmit = (e) => {
     e.preventDefault();
-    const usernameToSet = isLoginTab ? (emailInput.split('@')[0] || 'User') : (nameInput || 'User');
+    const usernameToSet = isLoginTab ? (emailInput.split('@')[0] || 'Connoisseur') : (nameInput || 'Connoisseur');
     localStorage.setItem('username', usernameToSet);
     setUser(usernameToSet);
     setIsAuthOpen(false);
@@ -92,7 +90,6 @@ export default function App() {
     setUser('');
   };
 
-  // Trigger Fake Payment Modal
   const handleOpenCheckout = (sofa) => {
     setSelectedSofaForPayment(sofa);
     setPaymentSuccess(false);
@@ -100,7 +97,6 @@ export default function App() {
     setIsCheckoutOpen(true);
   };
 
-  // Simulate Payment Process & Add to Orders/Cart
   const handleProcessFakePayment = (e) => {
     e.preventDefault();
     setIsProcessingPayment(true);
@@ -109,7 +105,7 @@ export default function App() {
       setPaymentSuccess(true);
       
       const newOrder = {
-        orderId: 'ORD-' + Math.floor(100000 + Math.random() * 900000),
+        orderId: 'SC-' + Math.floor(100000 + Math.random() * 900000),
         sofa: selectedSofaForPayment,
         date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         method: paymentMethod.toUpperCase(),
@@ -119,67 +115,66 @@ export default function App() {
     }, 2000);
   };
 
-  // Cancel Order Functionality
   const handleCancelOrder = (orderId) => {
-    if (window.confirm("Kya aap sach me yeh order cancel karna chahte hain?")) {
+    if (window.confirm("Are you certain you wish to revoke this commission order?")) {
       setCart((prev) => prev.filter((item) => item.orderId !== orderId));
     }
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 text-stone-900 font-sans selection:bg-amber-800 selection:text-white">
+    <div className="min-h-screen bg-[#0c0a09] text-stone-100 font-sans selection:bg-amber-600 selection:text-white antialiased">
       
-      {/* 1. Header Navbar */}
-      <header className="bg-stone-950/90 backdrop-blur-md sticky top-0 z-50 w-full border-b border-stone-800 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-20 items-center">
+      {/* 1. ARCHITECTURAL LUXURY NAVBAR */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#0c0a09]/80 backdrop-blur-xl border-b border-stone-800/80 transition-all duration-300">
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+          <div className="flex justify-between h-24 items-center">
             
-            <div className="flex items-center space-x-2 cursor-pointer">
-              <span className="text-2xl font-black tracking-tight text-white">
-                Sofa<span className="text-amber-500">Craft</span>.
+            <div className="flex items-center space-x-3 cursor-pointer">
+              <span className="text-2xl font-serif tracking-widest text-white uppercase font-bold">
+                SOFA<span className="text-amber-500 font-normal">CRAFT</span>
               </span>
             </div>
 
-            <nav className="hidden md:flex space-x-10 font-medium text-stone-300 text-sm tracking-wide">
-              <a href="#home" className="hover:text-amber-400 transition">HOME</a>
-              <a href="#products" className="hover:text-amber-400 transition">COLLECTION</a>
-              <a href="#about" className="hover:text-amber-400 transition">ABOUT</a>
-              <a href="#contact" className="hover:text-amber-400 transition">CONTACT</a>
+            <nav className="hidden md:flex space-x-12 font-medium text-xs tracking-[0.2em] text-stone-300">
+              <a href="#home" className="hover:text-amber-400 transition duration-300">SANCTUARY</a>
+              <a href="#products" className="hover:text-amber-400 transition duration-300">COLLECTION</a>
+              <a href="#about" className="hover:text-amber-400 transition duration-300">ATELIER</a>
+              <a href="#contact" className="hover:text-amber-400 transition duration-300">INQUIRY</a>
             </nav>
 
             <div className="flex items-center space-x-6">
-              {/* Right Side Cart/Shop Icon with Order Count */}
+              {/* Order Cart Drawer Trigger */}
               <button 
                 type="button"
                 onClick={() => setIsCartOpen(true)}
-                className="p-2.5 text-stone-300 hover:text-amber-400 transition bg-stone-900 hover:bg-stone-800 rounded-full cursor-pointer relative border border-stone-800"
+                className="p-3 text-stone-200 hover:text-amber-400 transition bg-stone-900/80 hover:bg-stone-800 rounded-full relative border border-stone-800 shadow-inner cursor-pointer"
               >
-                🛒
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
                 {cart.length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-amber-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold animate-pulse">
+                  <span className="absolute -top-1 -right-1 bg-amber-600 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center font-bold tracking-tighter shadow-lg">
                     {cart.length}
                   </span>
                 )}
               </button>
 
               {user ? (
-                <div className="flex items-center space-x-4">
-                  <span className="text-stone-200 font-semibold text-sm">Hello, {user}</span>
+                <div className="flex items-center space-x-4 bg-stone-900/60 px-4 py-2 rounded-2xl border border-stone-800">
+                  <span className="text-amber-400 font-medium text-xs tracking-wider uppercase">{user}</span>
                   <button 
                     type="button"
                     onClick={handleLogout}
-                    className="border border-red-500 text-red-400 px-4 py-2 rounded-xl text-xs font-semibold hover:bg-red-950/50 transition cursor-pointer"
+                    className="text-stone-400 hover:text-red-400 text-xs tracking-wider uppercase font-semibold transition cursor-pointer"
                   >
-                    Logout
+                    Exit
                   </button>
                 </div>
               ) : (
                 <button 
                   type="button"
                   onClick={() => setIsAuthOpen(true)}
-                  className="bg-amber-700 text-white px-6 py-2.5 rounded-xl font-medium text-sm hover:bg-amber-800 transition shadow-md shadow-amber-900/20 cursor-pointer"
+                  className="bg-gradient-to-r from-amber-600 to-amber-700 text-white px-7 py-3 rounded-full font-medium text-xs tracking-[0.15em] uppercase hover:from-amber-500 hover:to-amber-600 transition duration-300 shadow-xl shadow-amber-950/50 cursor-pointer"
                 >
-                  Sign In
+                  Member Access
                 </button>
               )}
             </div>
@@ -188,92 +183,115 @@ export default function App() {
         </div>
       </header>
 
-      {/* 2. Hero Section */}
-      <section id="home" className="relative text-white min-h-[85vh] flex items-center px-4 sm:px-6 lg:px-8 overflow-hidden z-10 bg-stone-950">
-        <div className="absolute inset-0 z-0 flex transition-transform duration-700 ease-in-out" style={{ transform: `translateX(-${currentBgIndex * 100}%)` }}>
+      {/* 2. CINEMATIC HERO SECTION */}
+      <section id="home" className="relative min-h-screen flex items-center justify-center px-6 sm:px-8 lg:px-12 overflow-hidden">
+        
+        {/* Background Image Slider with Smooth Zoom */}
+        <div className="absolute inset-0 z-0 flex transition-transform duration-1000 ease-out" style={{ transform: `translateX(-${currentBgIndex * 100}%)` }}>
           {backgroundImages.map((img, index) => (
             <div key={index} className="w-full h-full flex-shrink-0 relative">
-              <img src={img} alt="Luxury Sofa Slide" className="w-full h-full object-cover object-center filter brightness-90" />
+              <img src={img} alt="Cinematic Luxury Sofa" className="w-full h-full object-cover object-center filter brightness-[0.55] contrast-110 scale-105 animate-fade-in" />
             </div>
           ))}
         </div>
 
-        <div className="absolute inset-0 z-10 bg-gradient-to-r from-stone-950/90 via-stone-950/70 to-stone-950/80"></div>
+        {/* Cinematic Vignette Overlay */}
+        <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#0c0a09] via-[#0c0a09]/40 to-[#0c0a09]/65"></div>
         
-        <div className="max-w-4xl mx-auto text-center relative z-20 pt-12 pb-20">
-          <span className="text-amber-400 font-semibold text-xs tracking-widest uppercase bg-amber-950/80 px-4 py-2 rounded-full border border-amber-700/60 inline-block mb-6 shadow-md">
-            Handcrafted Luxury Living
-          </span>
-          <h1 className="text-4xl sm:text-7xl font-black tracking-tight mb-8 leading-tight">
-            Elevate Your Space With <span className="text-amber-400">Timeless</span> Elegance.
+        {/* Hero Copy */}
+        <div className="max-w-5xl mx-auto text-center relative z-20 pt-28">
+          <div className="inline-flex items-center space-x-2 bg-stone-900/80 backdrop-blur-md px-5 py-2 rounded-full border border-stone-700/60 mb-8 shadow-2xl">
+            <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+            <span className="text-amber-400 font-medium text-[11px] tracking-[0.25em] uppercase">Bespoke Artisan Living</span>
+          </div>
+
+          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-serif tracking-tight mb-8 leading-[1.08] text-white">
+            Sculpted for the <br />
+            <span className="italic font-normal text-amber-200">Extraordinary</span>
           </h1>
-          <p className="text-lg sm:text-xl text-stone-200 mb-12 font-light max-w-2xl mx-auto leading-relaxed">
-            Discover bespoke artisan sofas designed for ultimate comfort, built with sustainable materials and unmatched craftsmanship.
+
+          <p className="text-base sm:text-lg text-stone-300 mb-14 font-light max-w-2xl mx-auto leading-relaxed tracking-wide">
+            Masterpiece seating architectures hand-crafted with architectural precision, premium sustainable hardwoods, and sublime Italian textiles.
           </p>
-          <a 
-            href="#products" 
-            className="bg-amber-600 hover:bg-amber-500 text-white font-medium px-10 py-4.5 rounded-full shadow-xl shadow-amber-900/40 transition duration-300 inline-block cursor-pointer text-base"
-          >
-            Explore Collection →
-          </a>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+            <a 
+              href="#products" 
+              className="w-full sm:w-auto bg-amber-600 hover:bg-amber-500 text-white font-medium px-10 py-4 rounded-full shadow-2xl shadow-amber-600/30 transition duration-300 uppercase tracking-[0.2em] text-xs cursor-pointer text-center"
+            >
+              Explore Collection
+            </a>
+            <a 
+              href="#about" 
+              className="w-full sm:w-auto bg-stone-900/80 hover:bg-stone-800 text-stone-200 border border-stone-700 font-medium px-10 py-4 rounded-full transition duration-300 uppercase tracking-[0.2em] text-xs cursor-pointer text-center backdrop-blur-md"
+            >
+              The Atelier Heritage
+            </a>
+          </div>
         </div>
       </section>
 
-      {/* 3. Products Section */}
-      <section id="products" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-        <div className="text-center mb-20">
-          <h2 className="text-3xl sm:text-5xl font-extrabold text-stone-950 tracking-tight">Our Signature Collection</h2>
-          <p className="text-stone-600 mt-3 text-lg font-light">Fetched live directly from your Render PostgreSQL Database</p>
+      {/* 3. SIGNATURE COLLECTION (POSTGRESQL DATA) */}
+      <section id="products" className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-32">
+        <div className="text-center mb-24">
+          <span className="text-amber-500 text-xs font-semibold tracking-[0.3em] uppercase block mb-3">PostgreSQL Live Inventory</span>
+          <h2 className="text-4xl sm:text-6xl font-serif tracking-tight text-white">The Master Series</h2>
+          <div className="w-16 h-0.5 bg-amber-600 mx-auto mt-6"></div>
         </div>
         
         {loading ? (
-          <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-950"></div>
+          <div className="flex flex-col items-center justify-center py-32 space-y-4">
+            <div className="w-12 h-12 border-2 border-amber-600 border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-stone-400 text-xs tracking-widest uppercase">Syncing Live Database...</p>
           </div>
         ) : error ? (
-          <div className="max-w-md mx-auto bg-red-50 border border-red-200 text-red-700 p-8 rounded-2xl text-center shadow-inner">
-            <p className="font-semibold text-lg">{error}</p>
+          <div className="max-w-lg mx-auto bg-red-950/30 border border-red-900/50 text-red-300 p-8 rounded-3xl text-center backdrop-blur-md">
+            <p className="font-medium text-sm">{error}</p>
           </div>
         ) : sofas.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-3xl border border-stone-200 shadow-sm max-w-2xl mx-auto">
-            <p className="text-stone-500 text-xl mb-3">No sofas found in database.</p>
-            <p className="text-stone-400 text-base">Please add products via your Django Admin panel (`/admin/`).</p>
+          <div className="text-center py-28 bg-stone-900/40 rounded-3xl border border-stone-800/80 max-w-xl mx-auto p-12">
+            <p className="text-4xl mb-4">🏛️</p>
+            <p className="text-stone-200 text-lg font-serif mb-2">No masterpieces currently listed.</p>
+            <p className="text-stone-500 text-xs tracking-wide">Publish items via your secure Django Admin backend panel (`/admin/`).</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-12">
             {sofas.map((sofa) => (
-              <div key={sofa.id} className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition duration-500 border border-stone-100 overflow-hidden flex flex-col justify-between group">
+              <div 
+                key={sofa.id} 
+                className="bg-stone-900/60 rounded-3xl border border-stone-800/80 overflow-hidden flex flex-col justify-between group hover:border-amber-600/50 transition duration-500 shadow-2xl"
+              >
                 <div>
-                  <div className="w-full h-80 bg-stone-100 relative overflow-hidden flex items-center justify-center">
+                  <div className="w-full h-80 bg-stone-950 relative overflow-hidden flex items-center justify-center">
                     {sofa.image ? (
-                      <img src={sofa.image} alt={sofa.name} className="w-full h-full object-cover object-center group-hover:scale-105 transition duration-500" />
+                      <img src={sofa.image} alt={sofa.name} className="w-full h-full object-cover object-center group-hover:scale-105 transition duration-700 filter brightness-95" />
                     ) : (
-                      <span className="text-stone-400 font-medium">🛋️ {sofa.name || sofa.title}</span>
+                      <span className="text-stone-600 font-serif italic text-lg">SofaCraft Archive</span>
                     )}
-                    <span className="absolute top-5 left-5 bg-white/95 backdrop-blur-sm text-stone-950 text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-full shadow-sm">
-                      {sofa.tag || 'Bestseller'}
+                    <span className="absolute top-5 left-5 bg-[#0c0a09]/90 backdrop-blur-md text-amber-400 text-[10px] font-bold uppercase tracking-[0.2em] px-4 py-1.5 rounded-full border border-stone-800 shadow-xl">
+                      {sofa.tag || 'Exclusive'}
                     </span>
                   </div>
                   
                   <div className="p-8">
-                    <h3 className="text-2xl font-bold text-stone-950 group-hover:text-amber-900 transition">{sofa.name || sofa.title}</h3>
-                    <p className="text-stone-600 text-sm mt-3 line-clamp-3 leading-relaxed font-light">{sofa.description}</p>
+                    <h3 className="text-2xl font-serif text-white group-hover:text-amber-300 transition duration-300">{sofa.name || sofa.title}</h3>
+                    <p className="text-stone-400 text-xs mt-3 line-clamp-3 leading-relaxed font-light">{sofa.description}</p>
                   </div>
                 </div>
 
-                <div className="p-8 pt-0 flex items-center justify-between mt-5">
+                <div className="p-8 pt-0 flex items-center justify-between mt-6">
                   <div>
-                    <span className="text-3xl font-black text-amber-950">₹{sofa.price}</span>
+                    <span className="text-2xl font-serif font-bold text-amber-400">₹{sofa.price}</span>
                     {sofa.original_price && (
-                      <span className="text-sm text-stone-400 line-through ml-3 font-medium">₹{sofa.original_price}</span>
+                      <span className="text-xs text-stone-500 line-through ml-3 font-mono">₹{sofa.original_price}</span>
                     )}
                   </div>
                   <button 
                     type="button"
                     onClick={() => handleOpenCheckout(sofa)}
-                    className="bg-stone-950 text-white px-6 py-3 rounded-xl hover:bg-amber-950 transition font-medium text-sm shadow-md cursor-pointer"
+                    className="bg-stone-100 hover:bg-amber-600 text-stone-950 hover:text-white px-6 py-3 rounded-full font-medium text-xs tracking-widest uppercase transition duration-300 shadow-lg cursor-pointer"
                   >
-                    Buy / Checkout
+                    Acquire
                   </button>
                 </div>
               </div>
@@ -282,87 +300,119 @@ export default function App() {
         )}
       </section>
 
-      {/* 4. About Section */}
-      <section id="about" className="py-24 bg-stone-100 px-4 sm:px-6 lg:px-8 border-y border-stone-200">
+      {/* 4. ATELIER HERITAGE SECTION */}
+      <section id="about" className="py-32 bg-[#120f0d] border-y border-stone-800/80 px-6 sm:px-8 lg:px-12">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-stone-950 mb-8 tracking-tight">Crafted For Generations</h2>
-          <p className="text-stone-700 text-xl leading-relaxed mb-12 font-light">
-            At SofaCraft, we believe furniture shouldn't just fill a room—it should tell a story.
+          <span className="text-amber-500 text-xs font-semibold tracking-[0.3em] uppercase block mb-3">Uncompromising Standards</span>
+          <h2 className="text-4xl sm:text-5xl font-serif text-white mb-10 tracking-tight">The Art of Timeless Craft</h2>
+          <p className="text-stone-300 text-lg leading-relaxed mb-16 font-light">
+            Every creation is an uncompromising synthesis of architectural discipline and tactile indulgence. Built upon certified kiln-dried hardwood skeletons and multi-density memory foams engineered for lifetimes of elegance.
           </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-stone-800">
+            <div className="bg-stone-950/60 p-8 rounded-3xl border border-stone-800/60">
+              <h4 className="text-3xl font-serif text-amber-400 mb-2">10 Years</h4>
+              <p className="text-xs text-stone-400 tracking-wider uppercase">Structural Warranty</p>
+            </div>
+            <div className="bg-stone-950/60 p-8 rounded-3xl border border-stone-800/60">
+              <h4 className="text-3xl font-serif text-amber-400 mb-2">100%</h4>
+              <p className="text-xs text-stone-400 tracking-wider uppercase">Sustainable Hardwood</p>
+            </div>
+            <div className="bg-stone-950/60 p-8 rounded-3xl border border-stone-800/60">
+              <h4 className="text-3xl font-serif text-amber-400 mb-2">White-Glove</h4>
+              <p className="text-xs text-stone-400 tracking-wider uppercase">Global Concierge Delivery</p>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* 5. Contact Section */}
-      <section id="contact" className="py-24 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-3xl p-10 sm:p-16 shadow-lg border border-stone-200">
-          <h2 className="text-4xl font-bold text-stone-950 tracking-tight text-center mb-8">Get In Touch</h2>
-          <form onSubmit={(e) => { e.preventDefault(); alert("Message sent!"); }} className="space-y-6">
-            <input type="text" placeholder="Your Name" required className="w-full p-4 border rounded-xl" />
-            <input type="email" placeholder="Your Email" required className="w-full p-4 border rounded-xl" />
-            <textarea placeholder="Message" rows="4" required className="w-full p-4 border rounded-xl"></textarea>
-            <button type="submit" className="w-full bg-amber-900 text-white py-4 rounded-xl font-semibold">Send Message</button>
+      {/* 5. INQUIRY SECTION */}
+      <section id="contact" className="py-32 max-w-3xl mx-auto px-6 sm:px-8 lg:px-12">
+        <div className="bg-stone-900/60 rounded-3xl p-10 sm:p-16 border border-stone-800 shadow-2xl backdrop-blur-xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-serif text-white">Private Commission Inquiry</h2>
+            <p className="text-stone-400 text-xs tracking-widest uppercase mt-3">Connect with our master artisans</p>
+          </div>
+          
+          <form onSubmit={(e) => { e.preventDefault(); alert("Your inquiry has been transmitted securely."); }} className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-400 mb-2">Full Name</label>
+                <input type="text" required className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl focus:border-amber-600 outline-none text-stone-100 text-sm" placeholder="Lord / Lady..." />
+              </div>
+              <div>
+                <label className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-400 mb-2">Electronic Mail</label>
+                <input type="email" required className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl focus:border-amber-600 outline-none text-stone-100 text-sm" placeholder="connoisseur@domain.com" />
+              </div>
+            </div>
+            <div>
+              <label className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-400 mb-2">Commission Specifications</label>
+              <textarea rows="4" required className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl focus:border-amber-600 outline-none text-stone-100 text-sm" placeholder="Specify dimensions, leather finishes, or custom timber..."></textarea>
+            </div>
+            <button type="submit" className="w-full bg-amber-600 hover:bg-amber-500 text-white py-4 rounded-full font-medium text-xs tracking-[0.2em] uppercase transition duration-300 shadow-xl shadow-amber-950 cursor-pointer">
+              Transmit Inquiry
+            </button>
           </form>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-stone-950 text-stone-400 py-12 text-center text-sm border-t border-stone-800">
-        <p>&copy; {new Date().getFullYear()} SofaCraft. All rights reserved.</p>
+      {/* ARCHITECTURAL FOOTER */}
+      <footer className="bg-stone-950 text-stone-400 py-16 text-center text-xs border-t border-stone-900">
+        <p className="font-serif text-lg tracking-widest text-white mb-2">SOFACRAFT ATELIER</p>
+        <p className="tracking-[0.2em] uppercase text-stone-500">&copy; {new Date().getFullYear()} All Rights Reserved. Sanctuary of Luxury Living.</p>
       </footer>
 
-      {/* 6. RIGHT SIDE CART / ORDERS SLIDE DRAWER */}
+      {/* 6. RIGHT SIDE ACTIVE ORDERS DRAWER */}
       {isCartOpen && (
-        <div className="fixed inset-0 bg-stone-950/60 backdrop-blur-sm z-50 flex justify-end">
-          <div className="bg-white w-full max-w-md h-full p-6 shadow-2xl flex flex-col justify-between overflow-y-auto">
+        <div className="fixed inset-0 bg-stone-950/80 backdrop-blur-md z-50 flex justify-end">
+          <div className="bg-[#120f0d] w-full max-w-md h-full p-8 shadow-2xl flex flex-col justify-between border-l border-stone-800 overflow-y-auto">
             <div>
-              <div className="flex justify-between items-center border-b pb-4 mb-6">
-                <h3 className="text-xl font-bold text-stone-900 flex items-center">
-                  🛒 Your Active Orders <span className="ml-2 text-xs bg-amber-100 text-amber-900 font-black px-2.5 py-1 rounded-full">{cart.length}</span>
+              <div className="flex justify-between items-center border-b border-stone-800 pb-6 mb-8">
+                <h3 className="text-lg font-serif text-white tracking-wide flex items-center">
+                  Active Commissions <span className="ml-3 text-xs bg-amber-600/20 text-amber-400 font-bold px-3 py-1 rounded-full border border-amber-600/30">{cart.length}</span>
                 </h3>
                 <button 
                   type="button" 
                   onClick={() => setIsCartOpen(false)}
-                  className="text-stone-400 hover:text-stone-700 text-xl font-bold p-1"
+                  className="text-stone-400 hover:text-white text-lg font-bold p-2 cursor-pointer"
                 >
                   ✕
                 </button>
               </div>
 
               {cart.length === 0 ? (
-                <div className="text-center py-20 text-stone-400">
-                  <p className="text-5xl mb-3">🛍️</p>
-                  <p className="font-medium text-stone-600">No active orders found.</p>
-                  <p className="text-xs mt-1">Buy a sofa using the "Buy / Checkout" button to see it stored here.</p>
+                <div className="text-center py-32 text-stone-500">
+                  <p className="text-4xl mb-4">📭</p>
+                  <p className="font-serif text-stone-300 text-base mb-1">No active commissions registered.</p>
+                  <p className="text-xs text-stone-600">Acquire a sofa model to populate your portfolio.</p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   {cart.map((item) => (
-                    <div key={item.orderId} className="border border-stone-200 rounded-2xl p-4 bg-stone-50/50 relative shadow-sm">
+                    <div key={item.orderId} className="border border-stone-800 rounded-3xl p-5 bg-stone-900/40 relative shadow-xl">
                       <div className="flex items-center space-x-4">
-                        <div className="w-16 h-16 bg-stone-200 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center">
+                        <div className="w-16 h-16 bg-stone-950 rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center border border-stone-800">
                           {item.sofa.image ? (
                             <img src={item.sofa.image} alt="" className="w-full h-full object-cover" />
                           ) : (
-                            '🛋️'
+                            '🏛️'
                           )}
                         </div>
                         <div className="flex-1">
-                          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                            CONFIRMED • {item.method}
+                          <span className="text-[9px] font-bold text-amber-400 bg-amber-950/50 px-2.5 py-0.5 rounded-full border border-amber-800/60 uppercase tracking-widest">
+                            {item.method} • SECURED
                           </span>
-                          <h4 className="font-bold text-stone-900 mt-1">{item.sofa.name || item.sofa.title}</h4>
-                          <p className="text-amber-900 font-extrabold text-sm">₹{item.sofa.price}</p>
-                          <p className="text-[11px] text-stone-400 mt-0.5">Order ID: {item.orderId}</p>
+                          <h4 className="font-serif text-white text-base mt-1.5">{item.sofa.name || item.sofa.title}</h4>
+                          <p className="text-amber-300 font-bold text-sm">₹{item.sofa.price}</p>
+                          <p className="text-[10px] text-stone-500 mt-1 font-mono">Ref: {item.orderId}</p>
                         </div>
                       </div>
 
-                      {/* Cancel Order Button */}
                       <button
                         type="button"
                         onClick={() => handleCancelOrder(item.orderId)}
-                        className="mt-3 w-full border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold py-2 rounded-xl transition flex items-center justify-center cursor-pointer"
+                        className="mt-4 w-full border border-red-950 bg-red-950/20 hover:bg-red-950/50 text-red-400 text-[11px] font-semibold py-2.5 rounded-xl transition uppercase tracking-widest cursor-pointer"
                       >
-                        🚫 Cancel Order
+                        Revoke Commission
                       </button>
                     </div>
                   ))}
@@ -371,13 +421,13 @@ export default function App() {
             </div>
 
             {cart.length > 0 && (
-              <div className="border-t pt-4 mt-6">
+              <div className="border-t border-stone-800 pt-6 mt-6">
                 <button 
                   type="button"
                   onClick={() => setIsCartOpen(false)}
-                  className="w-full bg-stone-900 text-white py-3.5 rounded-xl font-bold text-sm hover:bg-stone-800 transition"
+                  className="w-full bg-stone-100 text-stone-950 py-4 rounded-full font-medium text-xs tracking-widest uppercase hover:bg-white transition cursor-pointer"
                 >
-                  Close & Continue Browsing
+                  Return to Sanctuary
                 </button>
               </div>
             )}
@@ -385,127 +435,127 @@ export default function App() {
         </div>
       )}
 
-      {/* 7. FAKE / DEMO PAYMENT GATEWAY MODAL */}
+      {/* 7. HIGH-END SECURE CHECKOUT MODAL */}
       {isCheckoutOpen && selectedSofaForPayment && (
-        <div className="fixed inset-0 bg-stone-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-8 relative border border-stone-200">
+        <div className="fixed inset-0 bg-stone-950/85 backdrop-blur-xl flex items-center justify-center z-50 p-4">
+          <div className="bg-[#120f0d] rounded-3xl shadow-2xl max-w-lg w-full p-10 relative border border-stone-800">
             
             <button 
               type="button"
               onClick={() => setIsCheckoutOpen(false)}
-              className="absolute top-6 right-6 text-stone-400 hover:text-stone-700 font-bold text-lg bg-stone-100 w-9 h-9 rounded-full flex items-center justify-center cursor-pointer"
+              className="absolute top-6 right-6 text-stone-400 hover:text-white font-bold text-lg bg-stone-900 w-10 h-10 rounded-full flex items-center justify-center cursor-pointer border border-stone-800"
             >
               ✕
             </button>
 
             {!paymentSuccess ? (
               <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-amber-700 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
-                  Demo Payment Gateway
+                <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-amber-400 bg-amber-950/60 px-3.5 py-1.5 rounded-full border border-amber-800/60">
+                  Concierge Payment Gateway
                 </span>
                 
-                <h3 className="text-2xl font-black text-stone-900 mt-3 mb-1">Complete Order</h3>
-                <p className="text-stone-500 text-sm mb-6">Secured 256-bit SSL encrypted checkout</p>
+                <h3 className="text-3xl font-serif text-white mt-4 mb-1">Secure Acquisition</h3>
+                <p className="text-stone-400 text-xs tracking-wider mb-8">End-to-end 256-bit encrypted transaction</p>
 
-                <div className="bg-stone-50 border border-stone-200 p-4 rounded-2xl flex items-center space-x-4 mb-6">
-                  <div className="w-16 h-16 bg-stone-200 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center">
+                <div className="bg-stone-950 border border-stone-800 p-5 rounded-3xl flex items-center space-x-4 mb-8">
+                  <div className="w-16 h-16 bg-stone-900 rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center border border-stone-800">
                     {selectedSofaForPayment.image ? (
                       <img src={selectedSofaForPayment.image} alt="" className="w-full h-full object-cover" />
                     ) : (
-                      '🛋️'
+                      '🏛️'
                     )}
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-bold text-stone-900">{selectedSofaForPayment.name || selectedSofaForPayment.title}</h4>
-                    <p className="text-amber-900 font-black text-lg">₹{selectedSofaForPayment.price}</p>
+                    <h4 className="font-serif text-white text-lg">{selectedSofaForPayment.name || selectedSofaForPayment.title}</h4>
+                    <p className="text-amber-400 font-bold text-base">₹{selectedSofaForPayment.price}</p>
                   </div>
                 </div>
 
-                <form onSubmit={handleProcessFakePayment} className="space-y-4">
+                <form onSubmit={handleProcessFakePayment} className="space-y-6">
                   <div className="grid grid-cols-3 gap-3">
                     <button 
                       type="button"
                       onClick={() => setPaymentMethod('card')}
-                      className={`p-3 rounded-xl text-xs font-bold border transition cursor-pointer ${paymentMethod === 'card' ? 'border-amber-800 bg-amber-50 text-amber-900' : 'border-stone-200 text-stone-600'}`}
+                      className={`p-3 rounded-2xl text-[11px] font-bold uppercase tracking-wider border transition cursor-pointer ${paymentMethod === 'card' ? 'border-amber-600 bg-amber-950/40 text-amber-300' : 'border-stone-800 bg-stone-950 text-stone-400'}`}
                     >
-                      💳 Credit/Debit
+                      💳 Card
                     </button>
                     <button 
                       type="button"
                       onClick={() => setPaymentMethod('upi')}
-                      className={`p-3 rounded-xl text-xs font-bold border transition cursor-pointer ${paymentMethod === 'upi' ? 'border-amber-800 bg-amber-50 text-amber-900' : 'border-stone-200 text-stone-600'}`}
+                      className={`p-3 rounded-2xl text-[11px] font-bold uppercase tracking-wider border transition cursor-pointer ${paymentMethod === 'upi' ? 'border-amber-600 bg-amber-950/40 text-amber-300' : 'border-stone-800 bg-stone-950 text-stone-400'}`}
                     >
-                      📱 UPI / GPay
+                      📱 UPI
                     </button>
                     <button 
                       type="button"
                       onClick={() => setPaymentMethod('cod')}
-                      className={`p-3 rounded-xl text-xs font-bold border transition cursor-pointer ${paymentMethod === 'cod' ? 'border-amber-800 bg-amber-50 text-amber-900' : 'border-stone-200 text-stone-600'}`}
+                      className={`p-3 rounded-2xl text-[11px] font-bold uppercase tracking-wider border transition cursor-pointer ${paymentMethod === 'cod' ? 'border-amber-600 bg-amber-950/40 text-amber-300' : 'border-stone-800 bg-stone-950 text-stone-400'}`}
                     >
-                      💵 Cash on Delivery
+                      💵 COD
                     </button>
                   </div>
 
                   {paymentMethod === 'card' && (
-                    <div className="space-y-3 pt-2">
-                      <input type="text" placeholder="Card Number (e.g. 4000 1234 5678 9010)" required className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-sm outline-none" />
-                      <div className="grid grid-cols-2 gap-3">
-                        <input type="text" placeholder="MM/YY" required className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-sm outline-none" />
-                        <input type="password" placeholder="CVV" required className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-sm outline-none" />
+                    <div className="space-y-4 pt-2">
+                      <input type="text" placeholder="Card Number (e.g. 4000 1234 5678 9010)" required className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs outline-none text-stone-100" />
+                      <div className="grid grid-cols-2 gap-4">
+                        <input type="text" placeholder="MM/YY" required className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs outline-none text-stone-100" />
+                        <input type="password" placeholder="CVV" required className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs outline-none text-stone-100" />
                       </div>
                     </div>
                   )}
 
                   {paymentMethod === 'upi' && (
                     <div className="pt-2">
-                      <input type="text" placeholder="Enter UPI ID (e.g. name@okaxis)" required className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-sm outline-none" />
+                      <input type="text" placeholder="Enter UPI ID (e.g. connoisseur@okaxis)" required className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs outline-none text-stone-100" />
                     </div>
                   )}
 
                   {paymentMethod === 'cod' && (
-                    <div className="p-4 bg-amber-50/50 border border-amber-200 rounded-xl text-xs text-amber-900">
-                      Pay cash when the sofa is delivered to your doorstep.
+                    <div className="p-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs text-stone-400">
+                      Payment due upon white-glove delivery to your residence.
                     </div>
                   )}
 
                   <button 
                     type="submit" 
                     disabled={isProcessingPayment}
-                    className="w-full bg-amber-900 hover:bg-amber-950 text-white py-4 rounded-xl font-bold transition shadow-lg cursor-pointer flex items-center justify-center space-x-2 mt-4"
+                    className="w-full bg-amber-600 hover:bg-amber-500 text-white py-4 rounded-full font-medium text-xs tracking-[0.2em] uppercase transition shadow-xl cursor-pointer flex items-center justify-center space-x-2 mt-4"
                   >
                     {isProcessingPayment ? (
-                      <span>Processing Payment... ⏳</span>
+                      <span>Authorizing Secure Transfer... ⏳</span>
                     ) : (
-                      <span>Pay ₹{selectedSofaForPayment.price} Now →</span>
+                      <span>Authorize ₹{selectedSofaForPayment.price} →</span>
                     )}
                   </button>
                 </form>
               </div>
             ) : (
-              <div className="text-center py-8">
-                <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">
+              <div className="text-center py-10">
+                <div className="w-20 h-20 bg-emerald-950/60 text-emerald-400 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 border border-emerald-800">
                   ✓
                 </div>
-                <h3 className="text-2xl font-black text-stone-900">Payment Successful!</h3>
-                <p className="text-stone-600 text-sm mt-2">
-                  Order for <span className="font-bold text-stone-900">{selectedSofaForPayment.name || selectedSofaForPayment.title}</span> stored in your Cart/Orders list!
+                <h3 className="text-3xl font-serif text-white">Acquisition Confirmed</h3>
+                <p className="text-stone-400 text-sm mt-3 leading-relaxed">
+                  Your commission for <span className="font-serif text-white">{selectedSofaForPayment.name || selectedSofaForPayment.title}</span> has been successfully logged in your portfolio.
                 </p>
 
-                <div className="mt-6 flex space-x-3">
+                <div className="mt-8 flex space-x-4">
                   <button 
                     type="button"
                     onClick={() => {
                       setIsCheckoutOpen(false);
                       setIsCartOpen(true);
                     }}
-                    className="flex-1 bg-amber-900 text-white py-3 rounded-xl font-bold text-xs hover:bg-amber-950 transition"
+                    className="flex-1 bg-amber-600 text-white py-3.5 rounded-full font-medium text-xs tracking-widest uppercase hover:bg-amber-500 transition cursor-pointer"
                   >
-                    View Orders 🛒
+                    View Portfolio 🛒
                   </button>
                   <button 
                     type="button"
                     onClick={() => setIsCheckoutOpen(false)}
-                    className="flex-1 border border-stone-300 text-stone-700 py-3 rounded-xl font-bold text-xs hover:bg-stone-100 transition"
+                    className="flex-1 border border-stone-700 text-stone-300 py-3.5 rounded-full font-medium text-xs tracking-widest uppercase hover:bg-stone-900 transition cursor-pointer"
                   >
                     Close
                   </button>
@@ -517,17 +567,31 @@ export default function App() {
         </div>
       )}
 
-      {/* Auth Modal */}
+      {/* MEMBER ACCESS MODAL */}
       {isAuthOpen && (
-        <div className="fixed inset-0 bg-stone-950/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-10 relative">
-            <button type="button" onClick={() => setIsAuthOpen(false)} className="absolute top-6 right-6 text-stone-400 font-bold">✕</button>
-            <h3 className="text-2xl font-bold text-stone-950 mb-4">{isLoginTab ? 'Sign In' : 'Register'}</h3>
+        <div className="fixed inset-0 bg-stone-950/80 backdrop-blur-xl flex items-center justify-center z-50 p-4">
+          <div className="bg-[#120f0d] rounded-3xl shadow-2xl max-w-md w-full p-10 relative border border-stone-800">
+            <button type="button" onClick={() => setIsAuthOpen(false)} className="absolute top-6 right-6 text-stone-400 hover:text-white font-bold">✕</button>
+            <h3 className="text-3xl font-serif text-white mb-2">{isLoginTab ? 'Member Access' : 'Register Profile'}</h3>
+            <p className="text-stone-400 text-xs tracking-wider mb-8">Enter credentials for private showroom access</p>
+            
             <form onSubmit={handleAuthSubmit} className="space-y-4">
-              <input type="email" placeholder="Email" required value={emailInput} onChange={(e) => setEmailInput(e.target.value)} className="w-full p-3 border rounded-xl" />
-              <input type="password" placeholder="Password" required value={passInput} onChange={(e) => setPassInput(e.target.value)} className="w-full p-3 border rounded-xl" />
-              <button type="submit" className="w-full bg-amber-900 text-white py-3.5 rounded-xl font-bold">
-                {isLoginTab ? 'Sign In' : 'Register'}
+              {!isLoginTab && (
+                <div>
+                  <label className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-400 mb-2">Full Name</label>
+                  <input type="text" required value={nameInput} onChange={(e) => setNameInput(e.target.value)} className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs outline-none text-stone-100" placeholder="Arthur Pendelton" />
+                </div>
+              )}
+              <div>
+                <label className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-400 mb-2">Email Address</label>
+                <input type="email" required value={emailInput} onChange={(e) => setEmailInput(e.target.value)} className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs outline-none text-stone-100" placeholder="arthur@domain.com" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-400 mb-2">Password</label>
+                <input type="password" required value={passInput} onChange={(e) => setPassInput(e.target.value)} className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs outline-none text-stone-100" placeholder="••••••••" />
+              </div>
+              <button type="submit" className="w-full bg-amber-600 hover:bg-amber-500 text-white py-4 rounded-full font-medium text-xs tracking-[0.2em] uppercase transition shadow-xl cursor-pointer mt-4">
+                {isLoginTab ? 'Authenticate' : 'Register Profile'}
               </button>
             </form>
           </div>
