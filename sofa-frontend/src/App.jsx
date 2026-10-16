@@ -12,6 +12,10 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  // 🔍 Filter & Search State
+  const [priceRange, setPriceRange] = useState('ALL'); // ALL, 10000, 20000, 30000, 50000
+  const [searchQuery, setSearchQuery] = useState('');
+
   // Cart & Order Drawer State
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -74,6 +78,24 @@ export default function App() {
     fetchSofaData();
   }, [API_BASE]);
 
+  // 🎯 PRICE RANGE & SEARCH FILTER LOGIC
+  const filteredSofas = sofas.filter((sofa) => {
+    const sofaPrice = Number(sofa.price) || 0;
+    const sofaName = (sofa.name || sofa.title || '').toLowerCase();
+    
+    // Price Filter
+    let matchesPrice = true;
+    if (priceRange === '10000') matchesPrice = sofaPrice <= 10000;
+    else if (priceRange === '20000') matchesPrice = sofaPrice <= 20000;
+    else if (priceRange === '30000') matchesPrice = sofaPrice <= 30000;
+    else if (priceRange === '50000') matchesPrice = sofaPrice <= 50000;
+
+    // Search Filter
+    const matchesSearch = sofaName.includes(searchQuery.toLowerCase());
+
+    return matchesPrice && matchesSearch;
+  });
+
   const handleAuthSubmit = (e) => {
     e.preventDefault();
     const usernameToSet = isLoginTab ? (emailInput.split('@')[0] || 'Connoisseur') : (nameInput || 'Connoisseur');
@@ -124,7 +146,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#0c0a09] text-stone-100 font-sans selection:bg-amber-600 selection:text-white antialiased">
       
-      {/* 1. ARCHITECTURAL LUXURY NAVBAR */}
+      {/* 1. LUXURY NAVBAR */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-[#0c0a09]/80 backdrop-blur-xl border-b border-stone-800/80 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
           <div className="flex justify-between h-24 items-center">
@@ -143,7 +165,6 @@ export default function App() {
             </nav>
 
             <div className="flex items-center space-x-6">
-              {/* Order Cart Drawer Trigger */}
               <button 
                 type="button"
                 onClick={() => setIsCartOpen(true)}
@@ -151,7 +172,7 @@ export default function App() {
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
                 {cart.length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-amber-600 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center font-bold tracking-tighter shadow-lg">
+                  <span className="absolute -top-1 -right-1 bg-amber-600 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center font-bold tracking-tighter shadow-lg animate-pulse">
                     {cart.length}
                   </span>
                 )}
@@ -160,20 +181,12 @@ export default function App() {
               {user ? (
                 <div className="flex items-center space-x-4 bg-stone-900/60 px-4 py-2 rounded-2xl border border-stone-800">
                   <span className="text-amber-400 font-medium text-xs tracking-wider uppercase">{user}</span>
-                  <button 
-                    type="button"
-                    onClick={handleLogout}
-                    className="text-stone-400 hover:text-red-400 text-xs tracking-wider uppercase font-semibold transition cursor-pointer"
-                  >
+                  <button type="button" onClick={handleLogout} className="text-stone-400 hover:text-red-400 text-xs tracking-wider uppercase font-semibold transition cursor-pointer">
                     Exit
                   </button>
                 </div>
               ) : (
-                <button 
-                  type="button"
-                  onClick={() => setIsAuthOpen(true)}
-                  className="bg-gradient-to-r from-amber-600 to-amber-700 text-white px-7 py-3 rounded-full font-medium text-xs tracking-[0.15em] uppercase hover:from-amber-500 hover:to-amber-600 transition duration-300 shadow-xl shadow-amber-950/50 cursor-pointer"
-                >
+                <button type="button" onClick={() => setIsAuthOpen(true)} className="bg-gradient-to-r from-amber-600 to-amber-700 text-white px-7 py-3 rounded-full font-medium text-xs tracking-[0.15em] uppercase hover:from-amber-500 hover:to-amber-600 transition duration-300 shadow-xl shadow-amber-950/50 cursor-pointer">
                   Member Access
                 </button>
               )}
@@ -183,22 +196,18 @@ export default function App() {
         </div>
       </header>
 
-      {/* 2. CINEMATIC HERO SECTION */}
+      {/* 2. CINEMATIC HERO */}
       <section id="home" className="relative min-h-screen flex items-center justify-center px-6 sm:px-8 lg:px-12 overflow-hidden">
-        
-        {/* Background Image Slider with Smooth Zoom */}
         <div className="absolute inset-0 z-0 flex transition-transform duration-1000 ease-out" style={{ transform: `translateX(-${currentBgIndex * 100}%)` }}>
           {backgroundImages.map((img, index) => (
             <div key={index} className="w-full h-full flex-shrink-0 relative">
-              <img src={img} alt="Cinematic Luxury Sofa" className="w-full h-full object-cover object-center filter brightness-[0.55] contrast-110 scale-105 animate-fade-in" />
+              <img src={img} alt="Luxury Sofa" className="w-full h-full object-cover object-center filter brightness-[0.55] contrast-110 scale-105" />
             </div>
           ))}
         </div>
 
-        {/* Cinematic Vignette Overlay */}
         <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#0c0a09] via-[#0c0a09]/40 to-[#0c0a09]/65"></div>
         
-        {/* Hero Copy */}
         <div className="max-w-5xl mx-auto text-center relative z-20 pt-28">
           <div className="inline-flex items-center space-x-2 bg-stone-900/80 backdrop-blur-md px-5 py-2 rounded-full border border-stone-700/60 mb-8 shadow-2xl">
             <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
@@ -215,30 +224,75 @@ export default function App() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-            <a 
-              href="#products" 
-              className="w-full sm:w-auto bg-amber-600 hover:bg-amber-500 text-white font-medium px-10 py-4 rounded-full shadow-2xl shadow-amber-600/30 transition duration-300 uppercase tracking-[0.2em] text-xs cursor-pointer text-center"
-            >
+            <a href="#products" className="w-full sm:w-auto bg-amber-600 hover:bg-amber-500 text-white font-medium px-10 py-4 rounded-full shadow-2xl shadow-amber-600/30 transition duration-300 uppercase tracking-[0.2em] text-xs cursor-pointer text-center">
               Explore Collection
             </a>
-            <a 
-              href="#about" 
-              className="w-full sm:w-auto bg-stone-900/80 hover:bg-stone-800 text-stone-200 border border-stone-700 font-medium px-10 py-4 rounded-full transition duration-300 uppercase tracking-[0.2em] text-xs cursor-pointer text-center backdrop-blur-md"
-            >
+            <a href="#about" className="w-full sm:w-auto bg-stone-900/80 hover:bg-stone-800 text-stone-200 border border-stone-700 font-medium px-10 py-4 rounded-full transition duration-300 uppercase tracking-[0.2em] text-xs cursor-pointer text-center backdrop-blur-md">
               The Atelier Heritage
             </a>
           </div>
         </div>
       </section>
 
-      {/* 3. SIGNATURE COLLECTION (POSTGRESQL DATA) */}
+      {/* 3. SIGNATURE COLLECTION WITH PRICE RANGE FILTER */}
       <section id="products" className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-32">
-        <div className="text-center mb-24">
+        <div className="text-center mb-16">
           <span className="text-amber-500 text-xs font-semibold tracking-[0.3em] uppercase block mb-3">PostgreSQL Live Inventory</span>
           <h2 className="text-4xl sm:text-6xl font-serif tracking-tight text-white">The Master Series</h2>
           <div className="w-16 h-0.5 bg-amber-600 mx-auto mt-6"></div>
         </div>
-        
+
+        {/* 🎛️ PRICE RANGE & SEARCH FILTER CONTROL BAR */}
+        <div className="mb-16 bg-stone-900/60 p-6 rounded-3xl border border-stone-800/80 backdrop-blur-xl flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
+          
+          {/* Price Range Buttons */}
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <span className="text-xs font-mono uppercase text-stone-400 tracking-wider mr-2">Budget:</span>
+            {[
+              { label: 'All Sofas', value: 'ALL' },
+              { label: 'Under ₹10,000', value: '10000' },
+              { label: 'Under ₹20,000', value: '20000' },
+              { label: 'Under ₹30,000', value: '30000' },
+              { label: 'Under ₹50,000', value: '50000' },
+            ].map((btn) => (
+              <button
+                key={btn.value}
+                type="button"
+                onClick={() => setPriceRange(btn.value)}
+                className={`px-4 py-2 rounded-2xl text-xs font-semibold tracking-wider transition duration-300 cursor-pointer ${
+                  priceRange === btn.value
+                    ? 'bg-amber-600 text-white shadow-lg shadow-amber-950/50'
+                    : 'bg-stone-950 text-stone-400 hover:text-white border border-stone-800'
+                }`}
+              >
+                {btn.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Search Input */}
+          <div className="relative w-full md:w-64">
+            <input 
+              type="text" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search model name..." 
+              className="w-full px-4 py-2.5 bg-stone-950 border border-stone-800 rounded-2xl text-xs text-stone-200 outline-none focus:border-amber-600"
+            />
+            {searchQuery && (
+              <button 
+                type="button" 
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-2.5 text-stone-500 hover:text-white text-xs font-bold"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+        </div>
+
+        {/* PRODUCTS GRID */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32 space-y-4">
             <div className="w-12 h-12 border-2 border-amber-600 border-t-transparent rounded-full animate-spin"></div>
@@ -248,15 +302,22 @@ export default function App() {
           <div className="max-w-lg mx-auto bg-red-950/30 border border-red-900/50 text-red-300 p-8 rounded-3xl text-center backdrop-blur-md">
             <p className="font-medium text-sm">{error}</p>
           </div>
-        ) : sofas.length === 0 ? (
-          <div className="text-center py-28 bg-stone-900/40 rounded-3xl border border-stone-800/80 max-w-xl mx-auto p-12">
-            <p className="text-4xl mb-4">🏛️</p>
-            <p className="text-stone-200 text-lg font-serif mb-2">No masterpieces currently listed.</p>
-            <p className="text-stone-500 text-xs tracking-wide">Publish items via your secure Django Admin backend panel (`/admin/`).</p>
+        ) : filteredSofas.length === 0 ? (
+          <div className="text-center py-24 bg-stone-900/40 rounded-3xl border border-stone-800/80 max-w-xl mx-auto p-12">
+            <p className="text-4xl mb-4">🔍</p>
+            <p className="text-stone-200 text-lg font-serif mb-2">No sofas found in this price range.</p>
+            <p className="text-stone-500 text-xs tracking-wide mb-6">Try selecting 'All Sofas' or clearing search filters.</p>
+            <button 
+              type="button" 
+              onClick={() => { setPriceRange('ALL'); setSearchQuery(''); }}
+              className="bg-amber-600 text-white px-6 py-2.5 rounded-full text-xs font-semibold tracking-wider uppercase cursor-pointer"
+            >
+              Reset Filters
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-12">
-            {sofas.map((sofa) => (
+            {filteredSofas.map((sofa) => (
               <div 
                 key={sofa.id} 
                 className="bg-stone-900/60 rounded-3xl border border-stone-800/80 overflow-hidden flex flex-col justify-between group hover:border-amber-600/50 transition duration-500 shadow-2xl"
@@ -300,7 +361,7 @@ export default function App() {
         )}
       </section>
 
-      {/* 4. ATELIER HERITAGE SECTION */}
+      {/* 4. ATELIER HERITAGE */}
       <section id="about" className="py-32 bg-[#120f0d] border-y border-stone-800/80 px-6 sm:px-8 lg:px-12">
         <div className="max-w-4xl mx-auto text-center">
           <span className="text-amber-500 text-xs font-semibold tracking-[0.3em] uppercase block mb-3">Uncompromising Standards</span>
@@ -355,7 +416,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* ARCHITECTURAL FOOTER */}
+      {/* FOOTER */}
       <footer className="bg-stone-950 text-stone-400 py-16 text-center text-xs border-t border-stone-900">
         <p className="font-serif text-lg tracking-widest text-white mb-2">SOFACRAFT ATELIER</p>
         <p className="tracking-[0.2em] uppercase text-stone-500">&copy; {new Date().getFullYear()} All Rights Reserved. Sanctuary of Luxury Living.</p>
@@ -370,11 +431,7 @@ export default function App() {
                 <h3 className="text-lg font-serif text-white tracking-wide flex items-center">
                   Active Commissions <span className="ml-3 text-xs bg-amber-600/20 text-amber-400 font-bold px-3 py-1 rounded-full border border-amber-600/30">{cart.length}</span>
                 </h3>
-                <button 
-                  type="button" 
-                  onClick={() => setIsCartOpen(false)}
-                  className="text-stone-400 hover:text-white text-lg font-bold p-2 cursor-pointer"
-                >
+                <button type="button" onClick={() => setIsCartOpen(false)} className="text-stone-400 hover:text-white text-lg font-bold p-2 cursor-pointer">
                   ✕
                 </button>
               </div>
@@ -422,11 +479,7 @@ export default function App() {
 
             {cart.length > 0 && (
               <div className="border-t border-stone-800 pt-6 mt-6">
-                <button 
-                  type="button"
-                  onClick={() => setIsCartOpen(false)}
-                  className="w-full bg-stone-100 text-stone-950 py-4 rounded-full font-medium text-xs tracking-widest uppercase hover:bg-white transition cursor-pointer"
-                >
+                <button type="button" onClick={() => setIsCartOpen(false)} className="w-full bg-stone-100 text-stone-950 py-4 rounded-full font-medium text-xs tracking-widest uppercase hover:bg-white transition cursor-pointer">
                   Return to Sanctuary
                 </button>
               </div>
@@ -440,11 +493,7 @@ export default function App() {
         <div className="fixed inset-0 bg-stone-950/85 backdrop-blur-xl flex items-center justify-center z-50 p-4">
           <div className="bg-[#120f0d] rounded-3xl shadow-2xl max-w-lg w-full p-10 relative border border-stone-800">
             
-            <button 
-              type="button"
-              onClick={() => setIsCheckoutOpen(false)}
-              className="absolute top-6 right-6 text-stone-400 hover:text-white font-bold text-lg bg-stone-900 w-10 h-10 rounded-full flex items-center justify-center cursor-pointer border border-stone-800"
-            >
+            <button type="button" onClick={() => setIsCheckoutOpen(false)} className="absolute top-6 right-6 text-stone-400 hover:text-white font-bold text-lg bg-stone-900 w-10 h-10 rounded-full flex items-center justify-center cursor-pointer border border-stone-800">
               ✕
             </button>
 
@@ -473,25 +522,13 @@ export default function App() {
 
                 <form onSubmit={handleProcessFakePayment} className="space-y-6">
                   <div className="grid grid-cols-3 gap-3">
-                    <button 
-                      type="button"
-                      onClick={() => setPaymentMethod('card')}
-                      className={`p-3 rounded-2xl text-[11px] font-bold uppercase tracking-wider border transition cursor-pointer ${paymentMethod === 'card' ? 'border-amber-600 bg-amber-950/40 text-amber-300' : 'border-stone-800 bg-stone-950 text-stone-400'}`}
-                    >
+                    <button type="button" onClick={() => setPaymentMethod('card')} className={`p-3 rounded-2xl text-[11px] font-bold uppercase tracking-wider border transition cursor-pointer ${paymentMethod === 'card' ? 'border-amber-600 bg-amber-950/40 text-amber-300' : 'border-stone-800 bg-stone-950 text-stone-400'}`}>
                       💳 Card
                     </button>
-                    <button 
-                      type="button"
-                      onClick={() => setPaymentMethod('upi')}
-                      className={`p-3 rounded-2xl text-[11px] font-bold uppercase tracking-wider border transition cursor-pointer ${paymentMethod === 'upi' ? 'border-amber-600 bg-amber-950/40 text-amber-300' : 'border-stone-800 bg-stone-950 text-stone-400'}`}
-                    >
+                    <button type="button" onClick={() => setPaymentMethod('upi')} className={`p-3 rounded-2xl text-[11px] font-bold uppercase tracking-wider border transition cursor-pointer ${paymentMethod === 'upi' ? 'border-amber-600 bg-amber-950/40 text-amber-300' : 'border-stone-800 bg-stone-950 text-stone-400'}`}>
                       📱 UPI
                     </button>
-                    <button 
-                      type="button"
-                      onClick={() => setPaymentMethod('cod')}
-                      className={`p-3 rounded-2xl text-[11px] font-bold uppercase tracking-wider border transition cursor-pointer ${paymentMethod === 'cod' ? 'border-amber-600 bg-amber-950/40 text-amber-300' : 'border-stone-800 bg-stone-950 text-stone-400'}`}
-                    >
+                    <button type="button" onClick={() => setPaymentMethod('cod')} className={`p-3 rounded-2xl text-[11px] font-bold uppercase tracking-wider border transition cursor-pointer ${paymentMethod === 'cod' ? 'border-amber-600 bg-amber-950/40 text-amber-300' : 'border-stone-800 bg-stone-950 text-stone-400'}`}>
                       💵 COD
                     </button>
                   </div>
@@ -518,11 +555,7 @@ export default function App() {
                     </div>
                   )}
 
-                  <button 
-                    type="submit" 
-                    disabled={isProcessingPayment}
-                    className="w-full bg-amber-600 hover:bg-amber-500 text-white py-4 rounded-full font-medium text-xs tracking-[0.2em] uppercase transition shadow-xl cursor-pointer flex items-center justify-center space-x-2 mt-4"
-                  >
+                  <button type="submit" disabled={isProcessingPayment} className="w-full bg-amber-600 hover:bg-amber-500 text-white py-4 rounded-full font-medium text-xs tracking-[0.2em] uppercase transition shadow-xl cursor-pointer flex items-center justify-center space-x-2 mt-4">
                     {isProcessingPayment ? (
                       <span>Authorizing Secure Transfer... ⏳</span>
                     ) : (
@@ -542,21 +575,10 @@ export default function App() {
                 </p>
 
                 <div className="mt-8 flex space-x-4">
-                  <button 
-                    type="button"
-                    onClick={() => {
-                      setIsCheckoutOpen(false);
-                      setIsCartOpen(true);
-                    }}
-                    className="flex-1 bg-amber-600 text-white py-3.5 rounded-full font-medium text-xs tracking-widest uppercase hover:bg-amber-500 transition cursor-pointer"
-                  >
+                  <button type="button" onClick={() => { setIsCheckoutOpen(false); setIsCartOpen(true); }} className="flex-1 bg-amber-600 text-white py-3.5 rounded-full font-medium text-xs tracking-widest uppercase hover:bg-amber-500 transition cursor-pointer">
                     View Portfolio 🛒
                   </button>
-                  <button 
-                    type="button"
-                    onClick={() => setIsCheckoutOpen(false)}
-                    className="flex-1 border border-stone-700 text-stone-300 py-3.5 rounded-full font-medium text-xs tracking-widest uppercase hover:bg-stone-900 transition cursor-pointer"
-                  >
+                  <button type="button" onClick={() => setIsCheckoutOpen(false)} className="flex-1 border border-stone-700 text-stone-300 py-3.5 rounded-full font-medium text-xs tracking-widest uppercase hover:bg-stone-900 transition cursor-pointer">
                     Close
                   </button>
                 </div>
