@@ -28,8 +28,11 @@ export default function App() {
   const [reviews, setReviews] = useState([
     { id: 1, name: 'Lady Victoria Sterling', rating: 5, comment: 'The craftsmanship on the Royal Velvet piece is beyond breathtaking. Fits our Mumbai penthouse effortlessly.' },
     { id: 2, name: 'Rajesh Singhania', rating: 5, comment: 'Exceptional lumbar support and Italian leather finish. White-glove delivery service was top notch!' },
-    { id: 3, name: 'Ananya Deshmukh', rating: 5, comment: 'Custom teakwood framework and 40-density foam comfort. Totally worth the investment.' }
+    { id: 3, name: 'Ananya Deshmukh', rating: 5, comment: 'Custom teakwood framework and 40-density foam comfort. Totally worth the investment.' },
+    { id: 4, name: 'Vikramaditya Rao', rating: 5, comment: 'Solid hardwood frame and unmatched elegance. Highly recommended for premium interiors.' },
+    { id: 5, name: 'Siddharth Malhotra', rating: 5, comment: 'The seating depth is perfect and velvet texture feels extremely rich.' }
   ]);
+  const [showAllReviews, setShowAllReviews] = useState(false); // Toggle hidden reviews
   const [newReview, setNewReview] = useState({ name: '', comment: '', rating: 5 });
 
   // Cart & Order Drawer State
@@ -94,7 +97,6 @@ export default function App() {
     fetchSofaData();
   }, [API_BASE]);
 
-  // Wishlist Toggle Function
   const toggleWishlist = (e, sofa) => {
     e.stopPropagation();
     if (wishlist.some((item) => item.id === sofa.id)) {
@@ -104,7 +106,6 @@ export default function App() {
     }
   };
 
-  // Add Review Function
   const handleAddReview = (e) => {
     e.preventDefault();
     if (!newReview.name || !newReview.comment) return;
@@ -113,7 +114,6 @@ export default function App() {
     alert("Thank you! Your verified review has been published.");
   };
 
-  // PRICE RANGE & SEARCH FILTER LOGIC
   const filteredSofas = sofas.filter((sofa) => {
     const sofaPrice = Number(sofa.price) || 0;
     const sofaName = (sofa.name || sofa.title || '').toLowerCase();
@@ -179,6 +179,9 @@ export default function App() {
     }
   };
 
+  // Sirf pehle 3 reviews ya phir poore reviews dikhane ke liye logic
+  const displayedReviews = showAllReviews ? reviews : reviews.slice(0, 3);
+
   return (
     <div className="min-h-screen bg-[#0c0a09] text-stone-100 font-sans selection:bg-amber-600 selection:text-white antialiased">
       
@@ -196,14 +199,13 @@ export default function App() {
             <nav className="hidden md:flex space-x-12 font-medium text-xs tracking-[0.2em] text-stone-300">
               <a href="#home" className="hover:text-amber-400 transition duration-300">SANCTUARY</a>
               <a href="#products" className="hover:text-amber-400 transition duration-300">COLLECTION</a>
-              <a href="#reviews" className="hover:text-amber-400 transition duration-300">REVIEWS</a>
               <a href="#about" className="hover:text-amber-400 transition duration-300">ATELIER</a>
               <a href="#contact" className="hover:text-amber-400 transition duration-300">INQUIRY</a>
+              <a href="#reviews" className="hover:text-amber-400 transition duration-300">REVIEWS</a>
             </nav>
 
             <div className="flex items-center space-x-4 sm:space-x-6">
               
-              {/* Wishlist ❤️ Trigger */}
               <button 
                 type="button"
                 onClick={() => setIsWishlistOpen(true)}
@@ -217,7 +219,6 @@ export default function App() {
                 )}
               </button>
 
-              {/* Order Cart Drawer Trigger */}
               <button 
                 type="button"
                 onClick={() => setIsCartOpen(true)}
@@ -295,7 +296,6 @@ export default function App() {
           <div className="w-16 h-0.5 bg-amber-600 mx-auto mt-6"></div>
         </div>
 
-        {/* PRICE RANGE & SEARCH FILTER CONTROL BAR */}
         <div className="mb-16 bg-stone-900/60 p-6 rounded-3xl border border-stone-800/80 backdrop-blur-xl flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
           <div className="flex flex-wrap items-center justify-center gap-2">
             <span className="text-xs font-mono uppercase text-stone-400 tracking-wider mr-2">Budget:</span>
@@ -341,7 +341,6 @@ export default function App() {
           </div>
         </div>
 
-        {/* PRODUCTS GRID */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32 space-y-4">
             <div className="w-12 h-12 border-2 border-amber-600 border-t-transparent rounded-full animate-spin"></div>
@@ -385,12 +384,10 @@ export default function App() {
                         {sofa.tag || 'Exclusive'}
                       </span>
 
-                      {/* ⭐ Rating Badge */}
                       <span className="absolute bottom-4 left-4 bg-stone-900/90 backdrop-blur-md text-amber-400 text-[11px] font-bold tracking-wider px-3 py-1 rounded-full border border-stone-800 shadow-lg">
                         ⭐ 4.9/5
                       </span>
 
-                      {/* ❤️ Heart Wishlist Button */}
                       <button
                         type="button"
                         onClick={(e) => toggleWishlist(e, sofa)}
@@ -434,8 +431,37 @@ export default function App() {
         )}
       </section>
 
-      {/* 4. ⭐ CLIENT REVIEWS & TESTIMONIALS SECTION */}
-      <section id="reviews" className="py-32 bg-[#120f0d] border-y border-stone-800/80 px-6 sm:px-8 lg:px-12">
+      {/* 4. ATELIER HERITAGE */}
+      <section id="about" className="py-32 bg-[#120f0d] border-y border-stone-800/80 px-6 sm:px-8 lg:px-12">
+        <div className="max-w-4xl mx-auto text-center">
+          <span className="text-amber-500 text-xs font-semibold tracking-[0.3em] uppercase block mb-3">Uncompromising Standards</span>
+          <h2 className="text-4xl sm:text-5xl font-serif text-white mb-10 tracking-tight">The Art of Timeless Craft</h2>
+          <p className="text-stone-300 text-lg leading-relaxed mb-16 font-light">
+            Every creation is an uncompromising synthesis of architectural discipline and tactile indulgence.
+          </p>
+        </div>
+      </section>
+
+      {/* 5. INQUIRY SECTION */}
+      <section id="contact" className="py-32 max-w-3xl mx-auto px-6 sm:px-8 lg:px-12">
+        <div className="bg-stone-900/60 rounded-3xl p-10 sm:p-16 border border-stone-800 shadow-2xl backdrop-blur-xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-serif text-white">Private Commission Inquiry</h2>
+            <p className="text-stone-400 text-xs tracking-widest uppercase mt-3">Connect with our master artisans</p>
+          </div>
+          <form onSubmit={(e) => { e.preventDefault(); alert("Your inquiry has been transmitted securely."); }} className="space-y-6">
+            <input type="text" placeholder="Full Name" required className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs text-stone-100" />
+            <input type="email" placeholder="Email" required className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs text-stone-100" />
+            <textarea rows="4" placeholder="Commission specifications..." required className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs text-stone-100"></textarea>
+            <button type="submit" className="w-full bg-amber-600 hover:bg-amber-500 text-white py-4 rounded-full font-medium text-xs tracking-[0.2em] uppercase transition cursor-pointer">
+              Transmit Inquiry
+            </button>
+          </form>
+        </div>
+      </section>
+
+      {/* 6. ⭐ CLIENT REVIEWS & TESTIMONIALS SECTION (NOW AT THE VERY BOTTOM) */}
+      <section id="reviews" className="py-32 bg-[#0a0807] border-t border-stone-800/80 px-6 sm:px-8 lg:px-12">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-20">
             <span className="text-amber-500 text-xs font-semibold tracking-[0.3em] uppercase block mb-3">Client Satisfaction</span>
@@ -443,8 +469,9 @@ export default function App() {
             <div className="w-16 h-0.5 bg-amber-600 mx-auto mt-6"></div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            {reviews.map((rev) => (
+          {/* Reviews Grid (Maximum 3 by default) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            {displayedReviews.map((rev) => (
               <div key={rev.id} className="bg-stone-900/60 p-8 rounded-3xl border border-stone-800/80 shadow-xl flex flex-col justify-between">
                 <div>
                   <div className="flex text-amber-400 mb-4">
@@ -461,6 +488,19 @@ export default function App() {
               </div>
             ))}
           </div>
+
+          {/* Show More / Show Less Button if reviews > 3 */}
+          {reviews.length > 3 && (
+            <div className="text-center mb-16">
+              <button
+                type="button"
+                onClick={() => setShowAllReviews(!showAllReviews)}
+                className="border border-stone-700 bg-stone-900/80 hover:bg-stone-800 text-stone-200 px-8 py-3.5 rounded-full text-xs font-semibold tracking-widest uppercase transition duration-300 cursor-pointer shadow-lg"
+              >
+                {showAllReviews ? 'Show Fewer Reviews ▲' : `View All Reviews (${reviews.length}) ▼`}
+              </button>
+            </div>
+          )}
 
           {/* Submit Review Form */}
           <div className="bg-stone-950 p-8 rounded-3xl border border-stone-800 max-w-2xl mx-auto">
@@ -493,7 +533,13 @@ export default function App() {
         </div>
       </section>
 
-      {/* 5. WISHLIST ❤️ DRAWER */}
+      {/* FOOTER */}
+      <footer className="bg-stone-950 text-stone-400 py-16 text-center text-xs border-t border-stone-900">
+        <p className="font-serif text-lg tracking-widest text-white mb-2">SOFACRAFT ATELIER</p>
+        <p className="tracking-[0.2em] uppercase text-stone-500">&copy; {new Date().getFullYear()} All Rights Reserved.</p>
+      </footer>
+
+      {/* 7. WISHLIST ❤️ DRAWER */}
       {isWishlistOpen && (
         <div className="fixed inset-0 bg-stone-950/80 backdrop-blur-md z-50 flex justify-end">
           <div className="bg-[#120f0d] w-full max-w-md h-full p-8 shadow-2xl flex flex-col justify-between border-l border-stone-800 overflow-y-auto">
@@ -559,7 +605,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 6. PRODUCT DETAILS MODAL */}
+      {/* 8. PRODUCT DETAILS MODAL */}
       {selectedSofaDetail && (
         <div className="fixed inset-0 bg-stone-950/85 backdrop-blur-xl flex items-center justify-center z-50 p-4">
           <div className="bg-[#120f0d] rounded-3xl shadow-2xl max-w-3xl w-full p-8 sm:p-10 relative border border-stone-800 overflow-y-auto max-h-[90vh]">
@@ -609,41 +655,6 @@ export default function App() {
           </div>
         </div>
       )}
-
-      {/* 7. ATELIER HERITAGE */}
-      <section id="about" className="py-32 bg-[#120f0d] border-y border-stone-800/80 px-6 sm:px-8 lg:px-12">
-        <div className="max-w-4xl mx-auto text-center">
-          <span className="text-amber-500 text-xs font-semibold tracking-[0.3em] uppercase block mb-3">Uncompromising Standards</span>
-          <h2 className="text-4xl sm:text-5xl font-serif text-white mb-10 tracking-tight">The Art of Timeless Craft</h2>
-          <p className="text-stone-300 text-lg leading-relaxed mb-16 font-light">
-            Every creation is an uncompromising synthesis of architectural discipline and tactile indulgence.
-          </p>
-        </div>
-      </section>
-
-      {/* 8. INQUIRY SECTION */}
-      <section id="contact" className="py-32 max-w-3xl mx-auto px-6 sm:px-8 lg:px-12">
-        <div className="bg-stone-900/60 rounded-3xl p-10 sm:p-16 border border-stone-800 shadow-2xl backdrop-blur-xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-serif text-white">Private Commission Inquiry</h2>
-            <p className="text-stone-400 text-xs tracking-widest uppercase mt-3">Connect with our master artisans</p>
-          </div>
-          <form onSubmit={(e) => { e.preventDefault(); alert("Your inquiry has been transmitted securely."); }} className="space-y-6">
-            <input type="text" placeholder="Full Name" required className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs text-stone-100" />
-            <input type="email" placeholder="Email" required className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs text-stone-100" />
-            <textarea rows="4" placeholder="Commission specifications..." required className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs text-stone-100"></textarea>
-            <button type="submit" className="w-full bg-amber-600 hover:bg-amber-500 text-white py-4 rounded-full font-medium text-xs tracking-[0.2em] uppercase transition cursor-pointer">
-              Transmit Inquiry
-            </button>
-          </form>
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer className="bg-stone-950 text-stone-400 py-16 text-center text-xs border-t border-stone-900">
-        <p className="font-serif text-lg tracking-widest text-white mb-2">SOFACRAFT ATELIER</p>
-        <p className="tracking-[0.2em] uppercase text-stone-500">&copy; {new Date().getFullYear()} All Rights Reserved.</p>
-      </footer>
 
       {/* 9. ACTIVE ORDERS DRAWER */}
       {isCartOpen && (
