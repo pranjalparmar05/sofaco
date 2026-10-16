@@ -20,6 +20,10 @@ export default function App() {
   const [selectedSofaDetail, setSelectedSofaDetail] = useState(null);
   const [selectedColor, setSelectedColor] = useState('Royal Velvet');
 
+  // ❤️ Wishlist State
+  const [wishlist, setWishlist] = useState([]);
+  const [isWishlistOpen, setIsWishlistOpen] = useState(false);
+
   // Cart & Order Drawer State
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -82,6 +86,16 @@ export default function App() {
     fetchSofaData();
   }, [API_BASE]);
 
+  // Wishlist Toggle Function
+  const toggleWishlist = (e, sofa) => {
+    e.stopPropagation();
+    if (wishlist.some((item) => item.id === sofa.id)) {
+      setWishlist((prev) => prev.filter((item) => item.id !== sofa.id));
+    } else {
+      setWishlist((prev) => [...prev, sofa]);
+    }
+  };
+
   // PRICE RANGE & SEARCH FILTER LOGIC
   const filteredSofas = sofas.filter((sofa) => {
     const sofaPrice = Number(sofa.price) || 0;
@@ -116,7 +130,8 @@ export default function App() {
 
   const handleOpenCheckout = (sofa) => {
     setSelectedSofaForPayment(sofa);
-    setSelectedSofaDetail(null); // Detail modal band karke checkout kholein
+    setSelectedSofaDetail(null);
+    setIsWishlistOpen(false);
     setPaymentSuccess(false);
     setIsProcessingPayment(false);
     setIsCheckoutOpen(true);
@@ -168,7 +183,23 @@ export default function App() {
               <a href="#contact" className="hover:text-amber-400 transition duration-300">INQUIRY</a>
             </nav>
 
-            <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-4 sm:space-x-6">
+              
+              {/* Wishlist ❤️ Trigger */}
+              <button 
+                type="button"
+                onClick={() => setIsWishlistOpen(true)}
+                className="p-3 text-stone-200 hover:text-red-400 transition bg-stone-900/80 hover:bg-stone-800 rounded-full relative border border-stone-800 shadow-inner cursor-pointer"
+              >
+                ❤️
+                {wishlist.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center font-bold tracking-tighter shadow-lg">
+                    {wishlist.length}
+                  </span>
+                )}
+              </button>
+
+              {/* Order Cart Drawer Trigger */}
               <button 
                 type="button"
                 onClick={() => setIsCartOpen(true)}
@@ -316,55 +347,138 @@ export default function App() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-12">
-            {filteredSofas.map((sofa) => (
-              <div 
-                key={sofa.id} 
-                className="bg-stone-900/60 rounded-3xl border border-stone-800/80 overflow-hidden flex flex-col justify-between group hover:border-amber-600/50 transition duration-500 shadow-2xl cursor-pointer"
-                onClick={() => setSelectedSofaDetail(sofa)} // Click to view details
-              >
-                <div>
-                  <div className="w-full h-80 bg-stone-950 relative overflow-hidden flex items-center justify-center">
-                    {sofa.image ? (
-                      <img src={sofa.image} alt={sofa.name} className="w-full h-full object-cover object-center group-hover:scale-105 transition duration-700 filter brightness-95" />
-                    ) : (
-                      <span className="text-stone-600 font-serif italic text-lg">SofaCraft Archive</span>
-                    )}
-                    <span className="absolute top-5 left-5 bg-[#0c0a09]/90 backdrop-blur-md text-amber-400 text-[10px] font-bold uppercase tracking-[0.2em] px-4 py-1.5 rounded-full border border-stone-800 shadow-xl">
-                      {sofa.tag || 'Exclusive'}
-                    </span>
-                    <span className="absolute bottom-4 right-4 bg-stone-900/80 backdrop-blur-md text-stone-300 text-[10px] uppercase tracking-widest px-3 py-1 rounded-full border border-stone-700">
-                      View Specs 🔍
-                    </span>
-                  </div>
-                  
-                  <div className="p-8">
-                    <h3 className="text-2xl font-serif text-white group-hover:text-amber-300 transition duration-300">{sofa.name || sofa.title}</h3>
-                    <p className="text-stone-400 text-xs mt-3 line-clamp-3 leading-relaxed font-light">{sofa.description}</p>
-                  </div>
-                </div>
-
-                <div className="p-8 pt-0 flex items-center justify-between mt-6" onClick={(e) => e.stopPropagation()}>
+            {filteredSofas.map((sofa) => {
+              const isLiked = wishlist.some((item) => item.id === sofa.id);
+              return (
+                <div 
+                  key={sofa.id} 
+                  className="bg-stone-900/60 rounded-3xl border border-stone-800/80 overflow-hidden flex flex-col justify-between group hover:border-amber-600/50 transition duration-500 shadow-2xl cursor-pointer relative"
+                  onClick={() => setSelectedSofaDetail(sofa)}
+                >
                   <div>
-                    <span className="text-2xl font-serif font-bold text-amber-400">₹{sofa.price}</span>
-                    {sofa.original_price && (
-                      <span className="text-xs text-stone-500 line-through ml-3 font-mono">₹{sofa.original_price}</span>
-                    )}
+                    <div className="w-full h-80 bg-stone-950 relative overflow-hidden flex items-center justify-center">
+                      {sofa.image ? (
+                        <img src={sofa.image} alt={sofa.name} className="w-full h-full object-cover object-center group-hover:scale-105 transition duration-700 filter brightness-95" />
+                      ) : (
+                        <span className="text-stone-600 font-serif italic text-lg">SofaCraft Archive</span>
+                      )}
+                      
+                      <span className="absolute top-5 left-5 bg-[#0c0a09]/90 backdrop-blur-md text-amber-400 text-[10px] font-bold uppercase tracking-[0.2em] px-4 py-1.5 rounded-full border border-stone-800 shadow-xl">
+                        {sofa.tag || 'Exclusive'}
+                      </span>
+
+                      {/* ❤️ Heart Wishlist Button */}
+                      <button
+                        type="button"
+                        onClick={(e) => toggleWishlist(e, sofa)}
+                        className={`absolute top-5 right-5 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md border transition cursor-pointer ${
+                          isLiked ? 'bg-red-950/80 border-red-700 text-red-500' : 'bg-[#0c0a09]/70 border-stone-800 text-stone-400 hover:text-white'
+                        }`}
+                      >
+                        {isLiked ? '❤️' : '🤍'}
+                      </button>
+
+                      <span className="absolute bottom-4 right-4 bg-stone-900/80 backdrop-blur-md text-stone-300 text-[10px] uppercase tracking-widest px-3 py-1 rounded-full border border-stone-700">
+                        View Specs 🔍
+                      </span>
+                    </div>
+                    
+                    <div className="p-8">
+                      <h3 className="text-2xl font-serif text-white group-hover:text-amber-300 transition duration-300">{sofa.name || sofa.title}</h3>
+                      <p className="text-stone-400 text-xs mt-3 line-clamp-3 leading-relaxed font-light">{sofa.description}</p>
+                    </div>
                   </div>
-                  <button 
-                    type="button"
-                    onClick={() => handleOpenCheckout(sofa)}
-                    className="bg-stone-100 hover:bg-amber-600 text-stone-950 hover:text-white px-6 py-3 rounded-full font-medium text-xs tracking-widest uppercase transition duration-300 shadow-lg cursor-pointer"
-                  >
-                    Acquire
-                  </button>
+
+                  <div className="p-8 pt-0 flex items-center justify-between mt-6" onClick={(e) => e.stopPropagation()}>
+                    <div>
+                      <span className="text-2xl font-serif font-bold text-amber-400">₹{sofa.price}</span>
+                      {sofa.original_price && (
+                        <span className="text-xs text-stone-500 line-through ml-3 font-mono">₹{sofa.original_price}</span>
+                      )}
+                    </div>
+                    <button 
+                      type="button"
+                      onClick={() => handleOpenCheckout(sofa)}
+                      className="bg-stone-100 hover:bg-amber-600 text-stone-950 hover:text-white px-6 py-3 rounded-full font-medium text-xs tracking-widest uppercase transition duration-300 shadow-lg cursor-pointer"
+                    >
+                      Acquire
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </section>
 
-      {/* 4. PRODUCT DETAILS & SPECIFICATIONS POPUP MODAL */}
+      {/* 4. WISHLIST ❤️ DRAWER */}
+      {isWishlistOpen && (
+        <div className="fixed inset-0 bg-stone-950/80 backdrop-blur-md z-50 flex justify-end">
+          <div className="bg-[#120f0d] w-full max-w-md h-full p-8 shadow-2xl flex flex-col justify-between border-l border-stone-800 overflow-y-auto">
+            <div>
+              <div className="flex justify-between items-center border-b border-stone-800 pb-6 mb-8">
+                <h3 className="text-lg font-serif text-white tracking-wide flex items-center">
+                  Saved Favorites ❤️ <span className="ml-3 text-xs bg-red-950 text-red-400 font-bold px-3 py-1 rounded-full border border-red-800/60">{wishlist.length}</span>
+                </h3>
+                <button type="button" onClick={() => setIsWishlistOpen(false)} className="text-stone-400 hover:text-white text-lg font-bold p-2 cursor-pointer">✕</button>
+              </div>
+
+              {wishlist.length === 0 ? (
+                <div className="text-center py-32 text-stone-500">
+                  <p className="text-4xl mb-4">🤍</p>
+                  <p className="font-serif text-stone-300 text-base mb-1">Your wishlist is currently empty.</p>
+                  <p className="text-xs text-stone-600">Click the heart icon on any sofa card to save it here.</p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {wishlist.map((sofa) => (
+                    <div key={sofa.id} className="border border-stone-800 rounded-3xl p-5 bg-stone-900/40 relative shadow-xl flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-16 h-16 bg-stone-950 rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center border border-stone-800">
+                          {sofa.image ? (
+                            <img src={sofa.image} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            '🏛️'
+                          )}
+                        </div>
+                        <div>
+                          <h4 className="font-serif text-white text-base">{sofa.name || sofa.title}</h4>
+                          <p className="text-amber-300 font-bold text-sm">₹{sofa.price}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col space-y-2">
+                        <button
+                          type="button"
+                          onClick={() => handleOpenCheckout(sofa)}
+                          className="bg-amber-600 hover:bg-amber-500 text-white text-[10px] font-bold px-3 py-2 rounded-xl uppercase tracking-wider cursor-pointer"
+                        >
+                          Acquire
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => toggleWishlist(e, sofa)}
+                          className="text-stone-500 hover:text-red-400 text-[10px] text-center"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="border-t border-stone-800 pt-6 mt-6">
+              <button type="button" onClick={() => setIsWishlistOpen(false)} className="w-full bg-stone-100 text-stone-950 py-4 rounded-full font-medium text-xs tracking-widest uppercase hover:bg-white transition cursor-pointer">
+                Continue Browsing
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 5. PRODUCT DETAILS & SPECS POPUP MODAL */}
       {selectedSofaDetail && (
         <div className="fixed inset-0 bg-stone-950/85 backdrop-blur-xl flex items-center justify-center z-50 p-4">
           <div className="bg-[#120f0d] rounded-3xl shadow-2xl max-w-3xl w-full p-8 sm:p-10 relative border border-stone-800 overflow-y-auto max-h-[90vh]">
@@ -378,7 +492,6 @@ export default function App() {
             </button>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-              {/* Product Image View */}
               <div className="w-full h-80 bg-stone-950 rounded-2xl overflow-hidden border border-stone-800 flex items-center justify-center relative">
                 {selectedSofaDetail.image ? (
                   <img src={selectedSofaDetail.image} alt="" className="w-full h-full object-cover" />
@@ -390,21 +503,15 @@ export default function App() {
                 </span>
               </div>
 
-              {/* Specs & Customization */}
               <div className="space-y-5">
                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-500">
                   {selectedSofaDetail.tag || 'Master Craftsman Edition'}
                 </span>
                 
                 <h3 className="text-3xl font-serif text-white">{selectedSofaDetail.name || selectedSofaDetail.title}</h3>
-                
                 <p className="text-amber-400 font-serif text-2xl font-bold">₹{selectedSofaDetail.price}</p>
-                
-                <p className="text-stone-400 text-xs leading-relaxed font-light">
-                  {selectedSofaDetail.description}
-                </p>
+                <p className="text-stone-400 text-xs leading-relaxed font-light">{selectedSofaDetail.description}</p>
 
-                {/* Specs Table */}
                 <div className="border-t border-b border-stone-800 py-4 grid grid-cols-2 gap-3 text-xs">
                   <div>
                     <p className="text-stone-500 uppercase tracking-wider text-[10px]">Timber Framework</p>
@@ -414,38 +521,8 @@ export default function App() {
                     <p className="text-stone-500 uppercase tracking-wider text-[10px]">Cushion Density</p>
                     <p className="text-stone-200 font-medium mt-0.5">40 High-Resilience Foam</p>
                   </div>
-                  <div>
-                    <p className="text-stone-500 uppercase tracking-wider text-[10px]">Dimensions</p>
-                    <p className="text-stone-200 font-medium mt-0.5">84"W x 38"D x 34"H</p>
-                  </div>
-                  <div>
-                    <p className="text-stone-500 uppercase tracking-wider text-[10px]">Warranty</p>
-                    <p className="text-stone-200 font-medium mt-0.5">10 Years Structural</p>
-                  </div>
                 </div>
 
-                {/* Color Selector */}
-                <div>
-                  <p className="text-stone-400 text-[10px] uppercase tracking-wider mb-2">Select Italian Velvet Shade:</p>
-                  <div className="flex space-x-3">
-                    {['Royal Velvet', 'Emerald Green', 'Obsidian Charcoal'].map((color) => (
-                      <button
-                        key={color}
-                        type="button"
-                        onClick={() => setSelectedColor(color)}
-                        className={`px-3 py-1.5 rounded-xl text-[10px] font-medium border transition cursor-pointer ${
-                          selectedColor === color
-                            ? 'border-amber-500 bg-amber-950/40 text-amber-300'
-                            : 'border-stone-800 text-stone-500 hover:text-stone-300'
-                        }`}
-                      >
-                        {color}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Acquire Button */}
                 <button
                   type="button"
                   onClick={() => handleOpenCheckout(selectedSofaDetail)}
@@ -460,7 +537,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 5. ATELIER HERITAGE */}
+      {/* 6. ATELIER HERITAGE */}
       <section id="about" className="py-32 bg-[#120f0d] border-y border-stone-800/80 px-6 sm:px-8 lg:px-12">
         <div className="max-w-4xl mx-auto text-center">
           <span className="text-amber-500 text-xs font-semibold tracking-[0.3em] uppercase block mb-3">Uncompromising Standards</span>
@@ -468,24 +545,10 @@ export default function App() {
           <p className="text-stone-300 text-lg leading-relaxed mb-16 font-light">
             Every creation is an uncompromising synthesis of architectural discipline and tactile indulgence.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-stone-800">
-            <div className="bg-stone-950/60 p-8 rounded-3xl border border-stone-800/60">
-              <h4 className="text-3xl font-serif text-amber-400 mb-2">10 Years</h4>
-              <p className="text-xs text-stone-400 tracking-wider uppercase">Structural Warranty</p>
-            </div>
-            <div className="bg-stone-950/60 p-8 rounded-3xl border border-stone-800/60">
-              <h4 className="text-3xl font-serif text-amber-400 mb-2">100%</h4>
-              <p className="text-xs text-stone-400 tracking-wider uppercase">Sustainable Hardwood</p>
-            </div>
-            <div className="bg-stone-950/60 p-8 rounded-3xl border border-stone-800/60">
-              <h4 className="text-3xl font-serif text-amber-400 mb-2">White-Glove</h4>
-              <p className="text-xs text-stone-400 tracking-wider uppercase">Global Concierge Delivery</p>
-            </div>
-          </div>
         </div>
       </section>
 
-      {/* 6. INQUIRY SECTION */}
+      {/* 7. INQUIRY SECTION */}
       <section id="contact" className="py-32 max-w-3xl mx-auto px-6 sm:px-8 lg:px-12">
         <div className="bg-stone-900/60 rounded-3xl p-10 sm:p-16 border border-stone-800 shadow-2xl backdrop-blur-xl">
           <div className="text-center mb-12">
@@ -509,7 +572,7 @@ export default function App() {
         <p className="tracking-[0.2em] uppercase text-stone-500">&copy; {new Date().getFullYear()} All Rights Reserved.</p>
       </footer>
 
-      {/* 7. RIGHT SIDE ACTIVE ORDERS DRAWER */}
+      {/* 8. ACTIVE ORDERS DRAWER */}
       {isCartOpen && (
         <div className="fixed inset-0 bg-stone-950/80 backdrop-blur-md z-50 flex justify-end">
           <div className="bg-[#120f0d] w-full max-w-md h-full p-8 shadow-2xl flex flex-col justify-between border-l border-stone-800 overflow-y-auto">
@@ -571,7 +634,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 8. CHECKOUT MODAL */}
+      {/* 9. CHECKOUT MODAL */}
       {isCheckoutOpen && selectedSofaForPayment && (
         <div className="fixed inset-0 bg-stone-950/85 backdrop-blur-xl flex items-center justify-center z-50 p-4">
           <div className="bg-[#120f0d] rounded-3xl shadow-2xl max-w-lg w-full p-10 relative border border-stone-800">
