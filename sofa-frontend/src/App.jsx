@@ -12,32 +12,29 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Premium, Luxurious Background Images (Right-side automatically scrolling)
-  // Aap apni khud ki image URLs yahan replace kar sakte hain
+  // Premium Luxurious Background Images
   const backgroundImages = [
-    'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?q=80&w=1920&auto=format&fit=crop', // Royal velvet, moody lighting
-    'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=1920&auto=format&fit=crop', // Leather, classic mid-century study
-    'https://images.unsplash.com/photo-1618220179428-22790b461013?q=80&w=1920&auto=format&fit=crop', // Silk velvet, gold accent, elegant room
+    'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?q=80&w=1920&auto=format&fit=crop', 
+    'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=1920&auto=format&fit=crop', 
+    'https://images.unsplash.com/photo-1618220179428-22790b461013?q=80&w=1920&auto=format&fit=crop',
   ];
 
   const [currentBgIndex, setCurrentBgIndex] = useState(0);
 
-  // Automatically scroll background images to the right
+  // Automatically scroll background images
   useEffect(() => {
     const bgInterval = setInterval(() => {
       setCurrentBgIndex((prevIndex) => (prevIndex + 1) % backgroundImages.length);
-    }, 6000); // Change image every 6 seconds
+    }, 6000); 
 
     return () => clearInterval(bgInterval);
   }, [backgroundImages.length]);
 
-  // Aapka Render Backend Base URL
   const API_BASE = window.location.hostname === 'localhost' 
     ? 'http://127.0.0.1:8000' 
     : 'https://sofaco.onrender.com';
 
   useEffect(() => {
-    // Multi-endpoint fetch attempt
     const fetchSofaData = async () => {
       const endpoints = [
         `${API_BASE}/api/sofas/`,
@@ -63,7 +60,7 @@ export default function App() {
       }
 
       if (!success) {
-        setError('Backend database se connection nahi ho paa raha hai. Kripya check karein ki CORS aur Endpoints allowed hain.');
+        setError('Backend database se connection nahi ho paa raha hai.');
         setLoading(false);
       }
     };
@@ -90,55 +87,55 @@ export default function App() {
   return (
     <div className="min-h-screen bg-stone-50 text-stone-900 font-sans selection:bg-amber-800 selection:text-white">
       
-      {/* 1. Glassmorphism Modern Navbar (Transparent for Hero) */}
-      <header className="bg-transparent backdrop-blur-md sticky top-0 z-50 w-full border-b border-white/10">
+      {/* 1. Solid / Dark Frosted Navbar (Never hides content, always visible) */}
+      <header className="bg-stone-950/90 backdrop-blur-md sticky top-0 z-50 w-full border-b border-stone-800 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-20 items-center">
             
             {/* Logo */}
             <div className="flex items-center space-x-2 cursor-pointer">
-              <span className="text-2xl font-black tracking-tight text-white group">
-                Sofa<span className="text-amber-500 group-hover:text-amber-300 transition">Craft</span>.
+              <span className="text-2xl font-black tracking-tight text-white">
+                Sofa<span className="text-amber-500">Craft</span>.
               </span>
             </div>
 
-            {/* Navigation Links (White text for dark bg) */}
-            <nav className="hidden md:flex space-x-10 font-medium text-white/90 text-sm tracking-wide">
+            {/* Navigation Links */}
+            <nav className="hidden md:flex space-x-10 font-medium text-stone-300 text-sm tracking-wide">
               <a href="#home" className="hover:text-amber-400 transition">HOME</a>
               <a href="#products" className="hover:text-amber-400 transition">COLLECTION</a>
               <a href="#about" className="hover:text-amber-400 transition">ABOUT</a>
               <a href="#contact" className="hover:text-amber-400 transition">CONTACT</a>
             </nav>
 
-            {/* Actions (White icons/buttons) */}
+            {/* Actions */}
             <div className="flex items-center space-x-6">
               <button 
                 type="button"
                 onClick={() => alert("Your cart is currently empty.")}
-                className="p-2.5 text-white/80 hover:text-amber-400 transition bg-white/5 hover:bg-white/10 rounded-full cursor-pointer relative"
+                className="p-2.5 text-stone-300 hover:text-amber-400 transition bg-stone-900 hover:bg-stone-800 rounded-full cursor-pointer relative border border-stone-800"
               >
                 🛒
               </button>
 
               {user ? (
                 <div className="flex items-center space-x-4">
-                  <span className="text-white font-semibold text-sm">Hello, {user}</span>
+                  <span className="text-stone-200 font-semibold text-sm">Hello, {user}</span>
                   <button 
                     type="button"
                     onClick={handleLogout}
-                    className="border border-red-400 text-red-400 px-4 py-2 rounded-xl text-xs font-semibold hover:bg-red-950 transition cursor-pointer"
+                    className="border border-red-500 text-red-400 px-4 py-2 rounded-xl text-xs font-semibold hover:bg-red-950/50 transition cursor-pointer"
                   >
                     Logout
                   </button>
                 </div>
               ) : (
                 <button 
-                type="button"
-                onClick={() => setIsAuthOpen(true)}
-                className="bg-amber-800 text-white px-6 py-2.5 rounded-xl font-medium text-sm hover:bg-amber-900 transition shadow-md shadow-amber-900/10 cursor-pointer"
-              >
-                Sign In
-              </button>
+                  type="button"
+                  onClick={() => setIsAuthOpen(true)}
+                  className="bg-amber-700 text-white px-6 py-2.5 rounded-xl font-medium text-sm hover:bg-amber-800 transition shadow-md shadow-amber-900/20 cursor-pointer"
+                >
+                  Sign In
+                </button>
               )}
             </div>
 
@@ -146,44 +143,49 @@ export default function App() {
         </div>
       </header>
 
-      {/* 2. Premium Hero Section with Auto-Scrolling Background */}
-      <section id="home" className="relative text-white min-h-[90vh] flex items-center px-4 sm:px-6 lg:px-8 overflow-hidden z-10">
+      {/* 2. Premium Hero Section with Perfectly Adjusted Images */}
+      <section id="home" className="relative text-white min-h-[85vh] flex items-center px-4 sm:px-6 lg:px-8 overflow-hidden z-10 bg-stone-950">
         
-        {/* Background Image Carousel (Smooth scrolling effect) */}
-        <div className="absolute inset-0 z-0 flex transition-transform duration-[600ms] ease-out" style={{ transform: `translateX(-${currentBgIndex * 100}%)` }}>
+        {/* Background Image Carousel (Adjusted with object-cover and center alignment) */}
+        <div className="absolute inset-0 z-0 flex transition-transform duration-700 ease-in-out" style={{ transform: `translateX(-${currentBgIndex * 100}%)` }}>
           {backgroundImages.map((img, index) => (
             <div 
               key={index} 
-              className="w-full h-full flex-shrink-0 bg-cover bg-center"
-              style={{ backgroundImage: `url(${img})` }}
-            />
+              className="w-full h-full flex-shrink-0 relative"
+            >
+              <img 
+                src={img} 
+                alt="Luxury Sofa Slide" 
+                className="w-full h-full object-cover object-center filter brightness-90"
+              />
+            </div>
           ))}
         </div>
 
-        {/* Dark Premium Overlay (To make text pop) */}
-        <div className="absolute inset-0 z-10 bg-black/60 backdrop-blur-[1px]"></div>
+        {/* Rich Dark Overlay for Text Readability */}
+        <div className="absolute inset-0 z-10 bg-gradient-to-r from-stone-950/90 via-stone-950/70 to-stone-950/80"></div>
         
         {/* Hero Content */}
-        <div className="max-w-4xl mx-auto text-center relative z-20 pt-16 pb-24">
-          <span className="text-amber-400 font-semibold text-xs tracking-widest uppercase bg-amber-950/90 px-3.5 py-1.5 rounded-full border border-amber-800 inline-block mb-6 shadow-md shadow-amber-950/20">
+        <div className="max-w-4xl mx-auto text-center relative z-20 pt-12 pb-20">
+          <span className="text-amber-400 font-semibold text-xs tracking-widest uppercase bg-amber-950/80 px-4 py-2 rounded-full border border-amber-700/60 inline-block mb-6 shadow-md">
             Handcrafted Luxury Living
           </span>
           <h1 className="text-4xl sm:text-7xl font-black tracking-tight mb-8 leading-tight">
-            Elevate Your Space With <span className="text-amber-300">Timeless</span> Elegance.
+            Elevate Your Space With <span className="text-amber-400">Timeless</span> Elegance.
           </h1>
           <p className="text-lg sm:text-xl text-stone-200 mb-12 font-light max-w-2xl mx-auto leading-relaxed">
             Discover bespoke artisan sofas designed for ultimate comfort, built with sustainable materials and unmatched craftsmanship.
           </p>
           <a 
             href="#products" 
-            className="bg-amber-600 hover:bg-amber-500 text-white font-medium px-10 py-4.5 rounded-full shadow-xl shadow-amber-900/30 transition duration-300 inline-block cursor-pointer text-base"
+            className="bg-amber-600 hover:bg-amber-500 text-white font-medium px-10 py-4.5 rounded-full shadow-xl shadow-amber-900/40 transition duration-300 inline-block cursor-pointer text-base"
           >
             Explore Collection →
           </a>
         </div>
       </section>
 
-      {/* 3. Dynamic Products Section (Render Backend) */}
+      {/* 3. Dynamic Products Section */}
       <section id="products" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="text-center mb-20">
           <h2 className="text-3xl sm:text-5xl font-extrabold text-stone-950 tracking-tight">Our Signature Collection</h2>
@@ -213,7 +215,7 @@ export default function App() {
                 <div>
                   <div className="w-full h-80 bg-stone-100 relative overflow-hidden flex items-center justify-center">
                     {sofa.image ? (
-                      <img src={sofa.image} alt={sofa.name} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                      <img src={sofa.image} alt={sofa.name} className="w-full h-full object-cover object-center group-hover:scale-105 transition duration-500" />
                     ) : (
                       <span className="text-stone-400 font-medium">🛋️ {sofa.name || sofa.title}</span>
                     )}
@@ -309,10 +311,10 @@ export default function App() {
         <p className="font-light">&copy; {new Date().getFullYear()} SofaCraft Inc. All rights reserved.</p>
       </footer>
 
-      {/* Auth Modal (Premium Design) */}
+      {/* Auth Modal */}
       {isAuthOpen && (
         <div className="fixed inset-0 bg-stone-950/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-10 relative border border-stone-100 animate-fade-in">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-10 relative border border-stone-100">
             
             <button 
               type="button"
