@@ -13,8 +13,12 @@ export default function App() {
   const [error, setError] = useState('');
 
   // 🔍 Filter & Search State
-  const [priceRange, setPriceRange] = useState('ALL'); // ALL, 10000, 20000, 30000, 50000
+  const [priceRange, setPriceRange] = useState('ALL'); 
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Product Details Modal State
+  const [selectedSofaDetail, setSelectedSofaDetail] = useState(null);
+  const [selectedColor, setSelectedColor] = useState('Royal Velvet');
 
   // Cart & Order Drawer State
   const [cart, setCart] = useState([]);
@@ -78,19 +82,17 @@ export default function App() {
     fetchSofaData();
   }, [API_BASE]);
 
-  // 🎯 PRICE RANGE & SEARCH FILTER LOGIC
+  // PRICE RANGE & SEARCH FILTER LOGIC
   const filteredSofas = sofas.filter((sofa) => {
     const sofaPrice = Number(sofa.price) || 0;
     const sofaName = (sofa.name || sofa.title || '').toLowerCase();
     
-    // Price Filter
     let matchesPrice = true;
     if (priceRange === '10000') matchesPrice = sofaPrice <= 10000;
     else if (priceRange === '20000') matchesPrice = sofaPrice <= 20000;
     else if (priceRange === '30000') matchesPrice = sofaPrice <= 30000;
     else if (priceRange === '50000') matchesPrice = sofaPrice <= 50000;
 
-    // Search Filter
     const matchesSearch = sofaName.includes(searchQuery.toLowerCase());
 
     return matchesPrice && matchesSearch;
@@ -114,6 +116,7 @@ export default function App() {
 
   const handleOpenCheckout = (sofa) => {
     setSelectedSofaForPayment(sofa);
+    setSelectedSofaDetail(null); // Detail modal band karke checkout kholein
     setPaymentSuccess(false);
     setIsProcessingPayment(false);
     setIsCheckoutOpen(true);
@@ -129,6 +132,7 @@ export default function App() {
       const newOrder = {
         orderId: 'SC-' + Math.floor(100000 + Math.random() * 900000),
         sofa: selectedSofaForPayment,
+        color: selectedColor,
         date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         method: paymentMethod.toUpperCase(),
       };
@@ -234,7 +238,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* 3. SIGNATURE COLLECTION WITH PRICE RANGE FILTER */}
+      {/* 3. SIGNATURE COLLECTION */}
       <section id="products" className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-32">
         <div className="text-center mb-16">
           <span className="text-amber-500 text-xs font-semibold tracking-[0.3em] uppercase block mb-3">PostgreSQL Live Inventory</span>
@@ -242,10 +246,8 @@ export default function App() {
           <div className="w-16 h-0.5 bg-amber-600 mx-auto mt-6"></div>
         </div>
 
-        {/* 🎛️ PRICE RANGE & SEARCH FILTER CONTROL BAR */}
+        {/* PRICE RANGE & SEARCH FILTER CONTROL BAR */}
         <div className="mb-16 bg-stone-900/60 p-6 rounded-3xl border border-stone-800/80 backdrop-blur-xl flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
-          
-          {/* Price Range Buttons */}
           <div className="flex flex-wrap items-center justify-center gap-2">
             <span className="text-xs font-mono uppercase text-stone-400 tracking-wider mr-2">Budget:</span>
             {[
@@ -270,7 +272,6 @@ export default function App() {
             ))}
           </div>
 
-          {/* Search Input */}
           <div className="relative w-full md:w-64">
             <input 
               type="text" 
@@ -289,7 +290,6 @@ export default function App() {
               </button>
             )}
           </div>
-
         </div>
 
         {/* PRODUCTS GRID */}
@@ -306,7 +306,6 @@ export default function App() {
           <div className="text-center py-24 bg-stone-900/40 rounded-3xl border border-stone-800/80 max-w-xl mx-auto p-12">
             <p className="text-4xl mb-4">🔍</p>
             <p className="text-stone-200 text-lg font-serif mb-2">No sofas found in this price range.</p>
-            <p className="text-stone-500 text-xs tracking-wide mb-6">Try selecting 'All Sofas' or clearing search filters.</p>
             <button 
               type="button" 
               onClick={() => { setPriceRange('ALL'); setSearchQuery(''); }}
@@ -320,7 +319,8 @@ export default function App() {
             {filteredSofas.map((sofa) => (
               <div 
                 key={sofa.id} 
-                className="bg-stone-900/60 rounded-3xl border border-stone-800/80 overflow-hidden flex flex-col justify-between group hover:border-amber-600/50 transition duration-500 shadow-2xl"
+                className="bg-stone-900/60 rounded-3xl border border-stone-800/80 overflow-hidden flex flex-col justify-between group hover:border-amber-600/50 transition duration-500 shadow-2xl cursor-pointer"
+                onClick={() => setSelectedSofaDetail(sofa)} // Click to view details
               >
                 <div>
                   <div className="w-full h-80 bg-stone-950 relative overflow-hidden flex items-center justify-center">
@@ -332,6 +332,9 @@ export default function App() {
                     <span className="absolute top-5 left-5 bg-[#0c0a09]/90 backdrop-blur-md text-amber-400 text-[10px] font-bold uppercase tracking-[0.2em] px-4 py-1.5 rounded-full border border-stone-800 shadow-xl">
                       {sofa.tag || 'Exclusive'}
                     </span>
+                    <span className="absolute bottom-4 right-4 bg-stone-900/80 backdrop-blur-md text-stone-300 text-[10px] uppercase tracking-widest px-3 py-1 rounded-full border border-stone-700">
+                      View Specs 🔍
+                    </span>
                   </div>
                   
                   <div className="p-8">
@@ -340,7 +343,7 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="p-8 pt-0 flex items-center justify-between mt-6">
+                <div className="p-8 pt-0 flex items-center justify-between mt-6" onClick={(e) => e.stopPropagation()}>
                   <div>
                     <span className="text-2xl font-serif font-bold text-amber-400">₹{sofa.price}</span>
                     {sofa.original_price && (
@@ -361,13 +364,109 @@ export default function App() {
         )}
       </section>
 
-      {/* 4. ATELIER HERITAGE */}
+      {/* 4. PRODUCT DETAILS & SPECIFICATIONS POPUP MODAL */}
+      {selectedSofaDetail && (
+        <div className="fixed inset-0 bg-stone-950/85 backdrop-blur-xl flex items-center justify-center z-50 p-4">
+          <div className="bg-[#120f0d] rounded-3xl shadow-2xl max-w-3xl w-full p-8 sm:p-10 relative border border-stone-800 overflow-y-auto max-h-[90vh]">
+            
+            <button 
+              type="button"
+              onClick={() => setSelectedSofaDetail(null)}
+              className="absolute top-6 right-6 text-stone-400 hover:text-white font-bold text-lg bg-stone-900 w-10 h-10 rounded-full flex items-center justify-center cursor-pointer border border-stone-800"
+            >
+              ✕
+            </button>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              {/* Product Image View */}
+              <div className="w-full h-80 bg-stone-950 rounded-2xl overflow-hidden border border-stone-800 flex items-center justify-center relative">
+                {selectedSofaDetail.image ? (
+                  <img src={selectedSofaDetail.image} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-stone-600 font-serif italic">No preview image</span>
+                )}
+                <span className="absolute bottom-3 left-3 bg-stone-900/90 text-amber-400 text-[10px] font-bold px-3 py-1 rounded-full border border-stone-800">
+                  360° Quality Inspected
+                </span>
+              </div>
+
+              {/* Specs & Customization */}
+              <div className="space-y-5">
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-500">
+                  {selectedSofaDetail.tag || 'Master Craftsman Edition'}
+                </span>
+                
+                <h3 className="text-3xl font-serif text-white">{selectedSofaDetail.name || selectedSofaDetail.title}</h3>
+                
+                <p className="text-amber-400 font-serif text-2xl font-bold">₹{selectedSofaDetail.price}</p>
+                
+                <p className="text-stone-400 text-xs leading-relaxed font-light">
+                  {selectedSofaDetail.description}
+                </p>
+
+                {/* Specs Table */}
+                <div className="border-t border-b border-stone-800 py-4 grid grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <p className="text-stone-500 uppercase tracking-wider text-[10px]">Timber Framework</p>
+                    <p className="text-stone-200 font-medium mt-0.5">Teakwood & Sheesham</p>
+                  </div>
+                  <div>
+                    <p className="text-stone-500 uppercase tracking-wider text-[10px]">Cushion Density</p>
+                    <p className="text-stone-200 font-medium mt-0.5">40 High-Resilience Foam</p>
+                  </div>
+                  <div>
+                    <p className="text-stone-500 uppercase tracking-wider text-[10px]">Dimensions</p>
+                    <p className="text-stone-200 font-medium mt-0.5">84"W x 38"D x 34"H</p>
+                  </div>
+                  <div>
+                    <p className="text-stone-500 uppercase tracking-wider text-[10px]">Warranty</p>
+                    <p className="text-stone-200 font-medium mt-0.5">10 Years Structural</p>
+                  </div>
+                </div>
+
+                {/* Color Selector */}
+                <div>
+                  <p className="text-stone-400 text-[10px] uppercase tracking-wider mb-2">Select Italian Velvet Shade:</p>
+                  <div className="flex space-x-3">
+                    {['Royal Velvet', 'Emerald Green', 'Obsidian Charcoal'].map((color) => (
+                      <button
+                        key={color}
+                        type="button"
+                        onClick={() => setSelectedColor(color)}
+                        className={`px-3 py-1.5 rounded-xl text-[10px] font-medium border transition cursor-pointer ${
+                          selectedColor === color
+                            ? 'border-amber-500 bg-amber-950/40 text-amber-300'
+                            : 'border-stone-800 text-stone-500 hover:text-stone-300'
+                        }`}
+                      >
+                        {color}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Acquire Button */}
+                <button
+                  type="button"
+                  onClick={() => handleOpenCheckout(selectedSofaDetail)}
+                  className="w-full bg-amber-600 hover:bg-amber-500 text-white py-4 rounded-full font-medium text-xs tracking-[0.2em] uppercase transition shadow-xl cursor-pointer mt-2"
+                >
+                  Proceed to Acquire →
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* 5. ATELIER HERITAGE */}
       <section id="about" className="py-32 bg-[#120f0d] border-y border-stone-800/80 px-6 sm:px-8 lg:px-12">
         <div className="max-w-4xl mx-auto text-center">
           <span className="text-amber-500 text-xs font-semibold tracking-[0.3em] uppercase block mb-3">Uncompromising Standards</span>
           <h2 className="text-4xl sm:text-5xl font-serif text-white mb-10 tracking-tight">The Art of Timeless Craft</h2>
           <p className="text-stone-300 text-lg leading-relaxed mb-16 font-light">
-            Every creation is an uncompromising synthesis of architectural discipline and tactile indulgence. Built upon certified kiln-dried hardwood skeletons and multi-density memory foams engineered for lifetimes of elegance.
+            Every creation is an uncompromising synthesis of architectural discipline and tactile indulgence.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-stone-800">
             <div className="bg-stone-950/60 p-8 rounded-3xl border border-stone-800/60">
@@ -386,30 +485,18 @@ export default function App() {
         </div>
       </section>
 
-      {/* 5. INQUIRY SECTION */}
+      {/* 6. INQUIRY SECTION */}
       <section id="contact" className="py-32 max-w-3xl mx-auto px-6 sm:px-8 lg:px-12">
         <div className="bg-stone-900/60 rounded-3xl p-10 sm:p-16 border border-stone-800 shadow-2xl backdrop-blur-xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-serif text-white">Private Commission Inquiry</h2>
             <p className="text-stone-400 text-xs tracking-widest uppercase mt-3">Connect with our master artisans</p>
           </div>
-          
           <form onSubmit={(e) => { e.preventDefault(); alert("Your inquiry has been transmitted securely."); }} className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-400 mb-2">Full Name</label>
-                <input type="text" required className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl focus:border-amber-600 outline-none text-stone-100 text-sm" placeholder="Lord / Lady..." />
-              </div>
-              <div>
-                <label className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-400 mb-2">Electronic Mail</label>
-                <input type="email" required className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl focus:border-amber-600 outline-none text-stone-100 text-sm" placeholder="connoisseur@domain.com" />
-              </div>
-            </div>
-            <div>
-              <label className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-400 mb-2">Commission Specifications</label>
-              <textarea rows="4" required className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl focus:border-amber-600 outline-none text-stone-100 text-sm" placeholder="Specify dimensions, leather finishes, or custom timber..."></textarea>
-            </div>
-            <button type="submit" className="w-full bg-amber-600 hover:bg-amber-500 text-white py-4 rounded-full font-medium text-xs tracking-[0.2em] uppercase transition duration-300 shadow-xl shadow-amber-950 cursor-pointer">
+            <input type="text" placeholder="Full Name" required className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs text-stone-100" />
+            <input type="email" placeholder="Email" required className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs text-stone-100" />
+            <textarea rows="4" placeholder="Commission specifications..." required className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs text-stone-100"></textarea>
+            <button type="submit" className="w-full bg-amber-600 hover:bg-amber-500 text-white py-4 rounded-full font-medium text-xs tracking-[0.2em] uppercase transition cursor-pointer">
               Transmit Inquiry
             </button>
           </form>
@@ -419,10 +506,10 @@ export default function App() {
       {/* FOOTER */}
       <footer className="bg-stone-950 text-stone-400 py-16 text-center text-xs border-t border-stone-900">
         <p className="font-serif text-lg tracking-widest text-white mb-2">SOFACRAFT ATELIER</p>
-        <p className="tracking-[0.2em] uppercase text-stone-500">&copy; {new Date().getFullYear()} All Rights Reserved. Sanctuary of Luxury Living.</p>
+        <p className="tracking-[0.2em] uppercase text-stone-500">&copy; {new Date().getFullYear()} All Rights Reserved.</p>
       </footer>
 
-      {/* 6. RIGHT SIDE ACTIVE ORDERS DRAWER */}
+      {/* 7. RIGHT SIDE ACTIVE ORDERS DRAWER */}
       {isCartOpen && (
         <div className="fixed inset-0 bg-stone-950/80 backdrop-blur-md z-50 flex justify-end">
           <div className="bg-[#120f0d] w-full max-w-md h-full p-8 shadow-2xl flex flex-col justify-between border-l border-stone-800 overflow-y-auto">
@@ -431,16 +518,13 @@ export default function App() {
                 <h3 className="text-lg font-serif text-white tracking-wide flex items-center">
                   Active Commissions <span className="ml-3 text-xs bg-amber-600/20 text-amber-400 font-bold px-3 py-1 rounded-full border border-amber-600/30">{cart.length}</span>
                 </h3>
-                <button type="button" onClick={() => setIsCartOpen(false)} className="text-stone-400 hover:text-white text-lg font-bold p-2 cursor-pointer">
-                  ✕
-                </button>
+                <button type="button" onClick={() => setIsCartOpen(false)} className="text-stone-400 hover:text-white text-lg font-bold p-2 cursor-pointer">✕</button>
               </div>
 
               {cart.length === 0 ? (
                 <div className="text-center py-32 text-stone-500">
                   <p className="text-4xl mb-4">📭</p>
                   <p className="font-serif text-stone-300 text-base mb-1">No active commissions registered.</p>
-                  <p className="text-xs text-stone-600">Acquire a sofa model to populate your portfolio.</p>
                 </div>
               ) : (
                 <div className="space-y-6">
@@ -460,7 +544,6 @@ export default function App() {
                           </span>
                           <h4 className="font-serif text-white text-base mt-1.5">{item.sofa.name || item.sofa.title}</h4>
                           <p className="text-amber-300 font-bold text-sm">₹{item.sofa.price}</p>
-                          <p className="text-[10px] text-stone-500 mt-1 font-mono">Ref: {item.orderId}</p>
                         </div>
                       </div>
 
@@ -488,11 +571,10 @@ export default function App() {
         </div>
       )}
 
-      {/* 7. HIGH-END SECURE CHECKOUT MODAL */}
+      {/* 8. CHECKOUT MODAL */}
       {isCheckoutOpen && selectedSofaForPayment && (
         <div className="fixed inset-0 bg-stone-950/85 backdrop-blur-xl flex items-center justify-center z-50 p-4">
           <div className="bg-[#120f0d] rounded-3xl shadow-2xl max-w-lg w-full p-10 relative border border-stone-800">
-            
             <button type="button" onClick={() => setIsCheckoutOpen(false)} className="absolute top-6 right-6 text-stone-400 hover:text-white font-bold text-lg bg-stone-900 w-10 h-10 rounded-full flex items-center justify-center cursor-pointer border border-stone-800">
               ✕
             </button>
@@ -504,9 +586,8 @@ export default function App() {
                 </span>
                 
                 <h3 className="text-3xl font-serif text-white mt-4 mb-1">Secure Acquisition</h3>
-                <p className="text-stone-400 text-xs tracking-wider mb-8">End-to-end 256-bit encrypted transaction</p>
 
-                <div className="bg-stone-950 border border-stone-800 p-5 rounded-3xl flex items-center space-x-4 mb-8">
+                <div className="bg-stone-950 border border-stone-800 p-5 rounded-3xl flex items-center space-x-4 my-6">
                   <div className="w-16 h-16 bg-stone-900 rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center border border-stone-800">
                     {selectedSofaForPayment.image ? (
                       <img src={selectedSofaForPayment.image} alt="" className="w-full h-full object-cover" />
@@ -522,45 +603,13 @@ export default function App() {
 
                 <form onSubmit={handleProcessFakePayment} className="space-y-6">
                   <div className="grid grid-cols-3 gap-3">
-                    <button type="button" onClick={() => setPaymentMethod('card')} className={`p-3 rounded-2xl text-[11px] font-bold uppercase tracking-wider border transition cursor-pointer ${paymentMethod === 'card' ? 'border-amber-600 bg-amber-950/40 text-amber-300' : 'border-stone-800 bg-stone-950 text-stone-400'}`}>
-                      💳 Card
-                    </button>
-                    <button type="button" onClick={() => setPaymentMethod('upi')} className={`p-3 rounded-2xl text-[11px] font-bold uppercase tracking-wider border transition cursor-pointer ${paymentMethod === 'upi' ? 'border-amber-600 bg-amber-950/40 text-amber-300' : 'border-stone-800 bg-stone-950 text-stone-400'}`}>
-                      📱 UPI
-                    </button>
-                    <button type="button" onClick={() => setPaymentMethod('cod')} className={`p-3 rounded-2xl text-[11px] font-bold uppercase tracking-wider border transition cursor-pointer ${paymentMethod === 'cod' ? 'border-amber-600 bg-amber-950/40 text-amber-300' : 'border-stone-800 bg-stone-950 text-stone-400'}`}>
-                      💵 COD
-                    </button>
+                    <button type="button" onClick={() => setPaymentMethod('card')} className={`p-3 rounded-2xl text-[11px] font-bold uppercase tracking-wider border cursor-pointer ${paymentMethod === 'card' ? 'border-amber-600 bg-amber-950/40 text-amber-300' : 'border-stone-800 bg-stone-950 text-stone-400'}`}>💳 Card</button>
+                    <button type="button" onClick={() => setPaymentMethod('upi')} className={`p-3 rounded-2xl text-[11px] font-bold uppercase tracking-wider border cursor-pointer ${paymentMethod === 'upi' ? 'border-amber-600 bg-amber-950/40 text-amber-300' : 'border-stone-800 bg-stone-950 text-stone-400'}`}>📱 UPI</button>
+                    <button type="button" onClick={() => setPaymentMethod('cod')} className={`p-3 rounded-2xl text-[11px] font-bold uppercase tracking-wider border cursor-pointer ${paymentMethod === 'cod' ? 'border-amber-600 bg-amber-950/40 text-amber-300' : 'border-stone-800 bg-stone-950 text-stone-400'}`}>💵 COD</button>
                   </div>
 
-                  {paymentMethod === 'card' && (
-                    <div className="space-y-4 pt-2">
-                      <input type="text" placeholder="Card Number (e.g. 4000 1234 5678 9010)" required className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs outline-none text-stone-100" />
-                      <div className="grid grid-cols-2 gap-4">
-                        <input type="text" placeholder="MM/YY" required className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs outline-none text-stone-100" />
-                        <input type="password" placeholder="CVV" required className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs outline-none text-stone-100" />
-                      </div>
-                    </div>
-                  )}
-
-                  {paymentMethod === 'upi' && (
-                    <div className="pt-2">
-                      <input type="text" placeholder="Enter UPI ID (e.g. connoisseur@okaxis)" required className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs outline-none text-stone-100" />
-                    </div>
-                  )}
-
-                  {paymentMethod === 'cod' && (
-                    <div className="p-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs text-stone-400">
-                      Payment due upon white-glove delivery to your residence.
-                    </div>
-                  )}
-
-                  <button type="submit" disabled={isProcessingPayment} className="w-full bg-amber-600 hover:bg-amber-500 text-white py-4 rounded-full font-medium text-xs tracking-[0.2em] uppercase transition shadow-xl cursor-pointer flex items-center justify-center space-x-2 mt-4">
-                    {isProcessingPayment ? (
-                      <span>Authorizing Secure Transfer... ⏳</span>
-                    ) : (
-                      <span>Authorize ₹{selectedSofaForPayment.price} →</span>
-                    )}
+                  <button type="submit" disabled={isProcessingPayment} className="w-full bg-amber-600 hover:bg-amber-500 text-white py-4 rounded-full font-medium text-xs tracking-[0.2em] uppercase transition cursor-pointer">
+                    {isProcessingPayment ? "Authorizing Secure Transfer... ⏳" : `Authorize ₹${selectedSofaForPayment.price} →`}
                   </button>
                 </form>
               </div>
@@ -570,15 +619,11 @@ export default function App() {
                   ✓
                 </div>
                 <h3 className="text-3xl font-serif text-white">Acquisition Confirmed</h3>
-                <p className="text-stone-400 text-sm mt-3 leading-relaxed">
-                  Your commission for <span className="font-serif text-white">{selectedSofaForPayment.name || selectedSofaForPayment.title}</span> has been successfully logged in your portfolio.
-                </p>
-
                 <div className="mt-8 flex space-x-4">
-                  <button type="button" onClick={() => { setIsCheckoutOpen(false); setIsCartOpen(true); }} className="flex-1 bg-amber-600 text-white py-3.5 rounded-full font-medium text-xs tracking-widest uppercase hover:bg-amber-500 transition cursor-pointer">
+                  <button type="button" onClick={() => { setIsCheckoutOpen(false); setIsCartOpen(true); }} className="flex-1 bg-amber-600 text-white py-3.5 rounded-full font-medium text-xs tracking-widest uppercase cursor-pointer">
                     View Portfolio 🛒
                   </button>
-                  <button type="button" onClick={() => setIsCheckoutOpen(false)} className="flex-1 border border-stone-700 text-stone-300 py-3.5 rounded-full font-medium text-xs tracking-widest uppercase hover:bg-stone-900 transition cursor-pointer">
+                  <button type="button" onClick={() => setIsCheckoutOpen(false)} className="flex-1 border border-stone-700 text-stone-300 py-3.5 rounded-full font-medium text-xs tracking-widest uppercase cursor-pointer">
                     Close
                   </button>
                 </div>
@@ -595,24 +640,10 @@ export default function App() {
           <div className="bg-[#120f0d] rounded-3xl shadow-2xl max-w-md w-full p-10 relative border border-stone-800">
             <button type="button" onClick={() => setIsAuthOpen(false)} className="absolute top-6 right-6 text-stone-400 hover:text-white font-bold">✕</button>
             <h3 className="text-3xl font-serif text-white mb-2">{isLoginTab ? 'Member Access' : 'Register Profile'}</h3>
-            <p className="text-stone-400 text-xs tracking-wider mb-8">Enter credentials for private showroom access</p>
-            
             <form onSubmit={handleAuthSubmit} className="space-y-4">
-              {!isLoginTab && (
-                <div>
-                  <label className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-400 mb-2">Full Name</label>
-                  <input type="text" required value={nameInput} onChange={(e) => setNameInput(e.target.value)} className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs outline-none text-stone-100" placeholder="Arthur Pendelton" />
-                </div>
-              )}
-              <div>
-                <label className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-400 mb-2">Email Address</label>
-                <input type="email" required value={emailInput} onChange={(e) => setEmailInput(e.target.value)} className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs outline-none text-stone-100" placeholder="arthur@domain.com" />
-              </div>
-              <div>
-                <label className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-400 mb-2">Password</label>
-                <input type="password" required value={passInput} onChange={(e) => setPassInput(e.target.value)} className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs outline-none text-stone-100" placeholder="••••••••" />
-              </div>
-              <button type="submit" className="w-full bg-amber-600 hover:bg-amber-500 text-white py-4 rounded-full font-medium text-xs tracking-[0.2em] uppercase transition shadow-xl cursor-pointer mt-4">
+              <input type="email" required value={emailInput} onChange={(e) => setEmailInput(e.target.value)} className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs outline-none text-stone-100" placeholder="arthur@domain.com" />
+              <input type="password" required value={passInput} onChange={(e) => setPassInput(e.target.value)} className="w-full px-5 py-4 bg-stone-950 border border-stone-800 rounded-2xl text-xs outline-none text-stone-100" placeholder="••••••••" />
+              <button type="submit" className="w-full bg-amber-600 text-white py-4 rounded-full font-medium text-xs tracking-[0.2em] uppercase cursor-pointer">
                 {isLoginTab ? 'Authenticate' : 'Register Profile'}
               </button>
             </form>
